@@ -1,5 +1,5 @@
 # Borrowise: check before you borrow
-**Live Demo:** https://bhavyas-2008.github.io/BORROWISE/
+
 **Theme:** Financial Inclusion & Livelihoods
 **Built for:** Social Impact Hackathon 2026
 
