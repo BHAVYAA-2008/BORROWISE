@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Borrowise – Check before you borrow</title>
+<meta name="description" content="Borrowise helps people check loan offers and apps before they borrow, see the real cost of a loan, and report harassment.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20150%20150%22%3E%3Crect%20width=%22150%22%20height=%22150%22%20rx=%2230%22%20fill=%22%23E3F3EB%22/%3E%3Ccircle%20cx=%2266%22%20cy=%2266%22%20r=%2236%22%20fill=%22%23FFFFFF%22%20stroke=%22%230F4C5C%22%20stroke-width=%229%22/%3E%3Cpath%20d=%22M92%2092%20L122%20122%22%20fill=%22none%22%20stroke=%22%230F4C5C%22%20stroke-width=%2213%22%20stroke-linecap=%22round%22/%3E%3Cpath%20d=%22M50%2052%20H82%20M50%2062%20H82%20M52%2052%20C80%2052%2080%2074%2052%2074%20L80%2092%22%20fill=%22none%22%20stroke=%22%231F7A55%22%20stroke-width=%226%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F0; --surface:#FFFFFF; --ink:#14262E; --muted:#546670; --line:#D3DDD9;
+  --brand:#0F4C5C; --brand-ink:#FFFFFF;
+  --ok:#1F7A55; --warn:#B7791F; --bad:#C0392B;
+  --ok-bg:#E3F3EB; --warn-bg:#FBF1DC; --bad-bg:#FBE6E3;
+  --ok-text:#165A3F; --warn-text:#7A4E00; --bad-text:#8E2A1F; --bad-ink:#FFFFFF;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,-apple-system,Roboto,'Noto Sans Tamil',sans-serif;
+  --body:'Instrument Sans','Segoe UI',system-ui,-apple-system,Roboto,'Noto Sans Tamil',sans-serif;
+  color-scheme:light dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1A1F; --surface:#15262D; --ink:#E6EFEC; --muted:#94A9B0; --line:#274049;
+    --brand:#5FB3C4; --brand-ink:#0E1A1F;
+    --ok:#4CC48F; --warn:#E3AE4D; --bad:#F0786A;
+    --ok-bg:#143026; --warn-bg:#33280F; --bad-bg:#3A1B18;
+    --ok-text:#8EE0BC; --warn-text:#F5CD83; --bad-text:#FFB4AA; --bad-ink:#2B0D09;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1A1F; --surface:#15262D; --ink:#E6EFEC; --muted:#94A9B0; --line:#274049;
+  --brand:#5FB3C4; --brand-ink:#0E1A1F;
+  --ok:#4CC48F; --warn:#E3AE4D; --bad:#F0786A;
+  --ok-bg:#143026; --warn-bg:#33280F; --bad-bg:#3A1B18;
+  --ok-text:#8EE0BC; --warn-text:#F5CD83; --bad-text:#FFB4AA; --bad-ink:#2B0D09;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);padding-bottom:92px;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+header.top{display:flex;align-items:center;gap:12px;padding:18px 0 4px}
+.mark{width:44px;height:44px;flex:none;display:block}
+.mark svg{width:44px;height:44px;display:block}
+h1{font:700 22px/1.1 var(--display);margin:0;letter-spacing:-.01em}
+h1 span{font-weight:500;color:var(--muted);margin-left:6px;font-size:18px}
+.tag{margin:2px 0 0;color:var(--muted);font-size:14px}
+h2{font:700 26px/1.15 var(--display);margin:20px 0 6px;letter-spacing:-.015em}
+h3{font:700 17px/1.3 var(--display);margin:0 0 8px}
+.lede{color:var(--muted);margin:0 0 16px;max-width:60ch}
+.muted{color:var(--muted);font-size:14.5px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+label,.lab{display:block;font-weight:600;font-size:14.5px;margin:14px 0 6px}
+label:first-child,.lab:first-child{margin-top:0}
+textarea,input[type=text],input[type=number],input[type=date],select{
+  width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:11px 12px;min-height:44px}
+textarea{resize:vertical;min-height:130px}
+::placeholder{color:var(--muted);opacity:.8}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font:600 16px/1 var(--body);min-height:46px;padding:0 20px;border-radius:10px;border:1px solid var(--brand);background:var(--brand);color:var(--brand-ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--brand)}
+.btn:active{transform:translateY(1px)}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:6px 0;font-weight:400;font-size:15px;cursor:pointer;background:var(--bg)}
+.opt input{width:20px;height:20px;min-height:0;margin:2px 0 0;flex:none;accent-color:var(--brand)}
+.opt:has(input:checked){border-color:var(--brand);background:var(--surface)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid2 .opt{margin:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid3 label{margin-top:0}
+.grid3 .small{font-size:13px;font-weight:600}
+.sect-title{font:600 13.5px/1.3 var(--body);color:var(--muted);margin:20px 0 6px}
+
+/* results */
+.result{margin-top:16px}
+.subject{margin:0 0 4px;color:var(--muted);font-size:14px;text-align:center;overflow-wrap:anywhere}
+.gauge{display:block;margin:0 auto;width:100%;max-width:300px;height:auto}
+.verdict{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.pill{display:inline-block;padding:7px 16px;border-radius:999px;font:700 16px/1 var(--display)}
+.pill.bad{background:var(--bad-bg);color:var(--bad-text)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-text)}
+.pill.ok{background:var(--ok-bg);color:var(--ok-text)}
+.pill.gray{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.dla{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px;background:var(--bg)}
+.dla .pill{font-size:14px;padding:5px 12px}
+.dla .alt li{padding:8px 0}
+.score{color:var(--muted);font-size:14px}
+.verdict-note{text-align:center;margin:10px auto 0;max-width:44ch;font-size:15px}
+.sigs,.steps{list-style:none;margin:0;padding:0}
+.sig{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.sig:first-child{border-top:0;padding-top:2px}
+.dot{flex:none;width:10px;height:10px;border-radius:50%;margin-top:7px}
+.dot.bad{background:var(--bad)} .dot.warn{background:var(--warn)} .dot.ok{background:var(--ok)} .dot.info{background:var(--muted)}
+.steps li{padding:8px 0 8px 22px;position:relative;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0}
+.steps li::before{content:"";position:absolute;left:2px;top:17px;width:8px;height:8px;border-radius:2px;background:var(--brand)}
+.fine{color:var(--muted);font-size:13px;margin:4px 2px 14px}
+.err{border-color:var(--bad);background:var(--bad-bg);color:var(--bad-text)}
+
+/* cost */
+.big-sentence{font:700 22px/1.25 var(--display);margin:0 0 6px;letter-spacing:-.01em}
+.bars{margin:14px 0 4px}
+.bar-row{margin:10px 0}
+.bar-label{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:4px}
+.bar-track{height:14px;background:var(--bg);border-radius:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:7px;background:var(--brand);min-width:4px}
+.bar-fill.bad{background:var(--bad)}
+.alt li{padding:10px 0;border-top:1px solid var(--line)}
+.alt li:first-child{border-top:0}
+.alt{list-style:none;margin:0;padding:0}
+
+/* help */
+.sos{border-color:var(--brand);border-width:2px}
+.sos a{color:var(--brand);font-weight:700}
+.check{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);cursor:pointer;font-weight:400;margin:0;font-size:16px}
+.check:first-of-type{border-top:0}
+.check input{width:22px;height:22px;min-height:0;margin:1px 0 0;flex:none;accent-color:var(--brand)}
+.check strong{display:block;font-weight:600}
+.check input:checked + div strong{text-decoration:line-through;color:var(--muted)}
+.draft{min-height:260px;font-size:14.5px;line-height:1.5}
+.progress{height:6px;background:var(--bg);border-radius:3px;margin:0 0 12px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+
+/* nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+nav.tabs .in{display:flex;max-width:640px;margin:0 auto}
+.tab{flex:1;background:none;border:0;color:var(--muted);font:600 12px/1.2 var(--body);padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:58px;cursor:pointer}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--brand);box-shadow:inset 0 3px 0 var(--brand)}
+
+.btn.danger{background:var(--bad);border-color:var(--bad);color:var(--bad-ink)}
+.btn.small{min-height:38px;padding:0 14px;font-size:14px}
+.btn:disabled{opacity:.6;cursor:default}
+.reject-card{border-color:var(--bad);border-width:2px}
+.rrow{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.rrow strong{overflow-wrap:anywhere}
+.count{font:700 18px var(--display);background:var(--bad-bg);color:var(--bad-text);border-radius:999px;min-width:42px;text-align:center;padding:4px 10px;flex:none}
+.empty{color:var(--muted);padding:6px 0}
+[hidden]{display:none !important}
+@media (max-width:380px){ .grid3{grid-template-columns:1fr} }
+@media (prefers-reduced-motion: reduce){ .progress i{transition:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><rect width="150" height="150" rx="30" fill="#E3F3EB"/><circle cx="66" cy="66" r="36" fill="#FFFFFF" stroke="#0F4C5C" stroke-width="9"/><path d="M92 92 L122 122" fill="none" stroke="#0F4C5C" stroke-width="13" stroke-linecap="round"/><path d="M50 52 H82 M50 62 H82 M52 52 C80 52 80 74 52 74 L80 92" fill="none" stroke="#1F7A55" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div>
+      <h1>Borrowise</h1>
+      <p class="tag">Check before you borrow</p>
+    </div>
+  </header>
+
+  <!-- LINK CHECK -->
+  <main>
+  <section id="p-link" class="panel">
+    <h2>Got a loan offer by SMS, email or WhatsApp?</h2>
+    <p class="lede">Paste the message or link below. Borrowise looks for scam signs. It never opens the link.</p>
+    <div class="card">
+      <label for="linkInput">Message or link</label>
+      <textarea id="linkInput" placeholder="Paste the full message here, including any links"></textarea>
+      <div class="row">
+        <button class="btn" id="btnLink" type="button">Check message</button>
+        <button class="btn ghost" id="exLink" type="button">Try a sample</button>
+      </div>
+      <p class="fine" style="margin:8px 0 0">Samples are made up for the demo. They are not real scams or real companies.</p>
+    </div>
+    <div id="linkOut" class="result" aria-live="polite" hidden></div>
+  </section>
+
+  <!-- APP CHECK -->
+  <section id="p-app" class="panel" hidden>
+    <h2>Check a loan app</h2>
+    <p class="lede">Answer what you can from the app's store page or the offer screen. Skip anything you don't know.</p>
+    <div class="card">
+      <label for="appName">App name</label>
+      <input type="text" id="appName" placeholder="For example: Kissht or KreditBee" autocomplete="off">
+      <div class="row" style="margin-top:10px"><button class="btn ghost" id="btnDla" type="button">Look up in RBI directory</button></div>
+      <div id="dlaOut" aria-live="polite" hidden></div>
+
+      <label for="src">Where did you find it?</label>
+      <select id="src">
+        <option value="play">Google Play Store</option>
+        <option value="apk">A link in an SMS, WhatsApp message or ad (APK file)</option>
+        <option value="unsure">Not sure</option>
+      </select>
+
+      <label for="rbi">Is the lender listed in RBI's directory of digital lending apps?</label>
+      <select id="rbi">
+        <option value="unchecked">I haven't checked yet</option>
+        <option value="yes">Yes, I found it</option>
+        <option value="no">No, it is not listed</option>
+      </select>
+      <p class="fine" style="margin:6px 2px 0">Filled in automatically when you look up the app name above. Change it if you checked on RBI's site yourself.</p>
+
+      <div class="lab" style="margin-top:14px">Which permissions does it ask for?</div>
+      <div class="grid2">
+        <label class="opt"><input type="checkbox" id="perm-contacts"> Contacts</label>
+        <label class="opt"><input type="checkbox" id="perm-photos"> Photos and files</label>
+        <label class="opt"><input type="checkbox" id="perm-sms"> SMS</label>
+        <label class="opt"><input type="checkbox" id="perm-calls"> Call logs</label>
+      </div>
+
+      <label for="fee">How much is deducted before the money reaches you?</label>
+      <select id="fee">
+        <option value="none">Nothing or I don't know</option>
+        <option value="low">Under 5%</option>
+        <option value="mid">5% to 15%</option>
+        <option value="high">More than 15%</option>
+      </select>
+
+      <div class="lab" style="margin-top:14px">Tick everything that is true</div>
+      <label class="opt"><input type="checkbox" id="c-nokfs"> It doesn't show the full repayment amount before I accept</label>
+      <label class="opt"><input type="checkbox" id="c-harass"> Reviews mention threats, or messages sent to contacts</label>
+      <label class="opt"><input type="checkbox" id="c-fake"> Many 5-star reviews look copied or were posted on the same day</label>
+      <label class="opt"><input type="checkbox" id="c-grv"> No grievance officer, company address or working support contact</label>
+      <label class="opt"><input type="checkbox" id="c-mail"> Developer uses a free email (Gmail, Yahoo) or has no privacy policy</label>
+      <label class="opt"><input type="checkbox" id="c-new"> The app is very new, or the developer's other apps were removed</label>
+
+      <div class="sect-title">Loan terms (optional, lets us work out the real yearly cost)</div>
+      <div class="grid3">
+        <div><label class="small" for="a-recv">You receive (₹)</label><input type="number" inputmode="decimal" min="0" step="any" id="a-recv" placeholder="3500"></div>
+        <div><label class="small" for="a-repay">You repay (₹)</label><input type="number" inputmode="decimal" min="0" step="any" id="a-repay" placeholder="5000"></div>
+        <div><label class="small" for="a-days">Days</label><input type="number" inputmode="numeric" min="1" step="1" id="a-days" placeholder="7"></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="btnApp" type="button">Check app</button>
+        <button class="btn ghost" id="exApp" type="button">Try a sample</button>
+      </div>
+      <p class="fine" style="margin:8px 0 0">Samples are made up for the demo. They are not real scams or real companies.</p>
+    </div>
+    <div id="appOut" class="result" aria-live="polite" hidden></div>
+  </section>
+
+  <!-- LOAN COST -->
+  <section id="p-cost" class="panel" hidden>
+    <h2>What will this loan really cost?</h2>
+    <p class="lede">Enter the numbers from the offer. We turn them into a cost per year, so you can compare.</p>
+    <div class="card">
+      <label for="k-offer">Loan amount offered (₹, optional)</label>
+      <input type="number" inputmode="decimal" min="0" step="any" id="k-offer" placeholder="5000">
+      <label for="k-recv">Amount that reaches your account (₹)</label>
+      <input type="number" inputmode="decimal" min="0" step="any" id="k-recv" placeholder="3500">
+      <label for="k-repay">Total you must pay back (₹)</label>
+      <input type="number" inputmode="decimal" min="0" step="any" id="k-repay" placeholder="5000">
+      <label for="k-days">Days until repayment</label>
+      <input type="number" inputmode="numeric" min="1" step="1" id="k-days" placeholder="7">
+      <div class="row">
+        <button class="btn" id="btnCost" type="button">Show real cost</button>
+        <button class="btn ghost" id="exCost" type="button">Try a sample</button>
+      </div>
+      <p class="fine" style="margin:8px 0 0">Samples are made up for the demo. They are not real scams or real companies.</p>
+    </div>
+    <div id="costOut" class="result" aria-live="polite" hidden></div>
+
+    <div class="card">
+      <h3>Safer places to borrow</h3>
+      <ul class="alt">
+        <li><strong>Your bank or a cooperative bank.</strong><div class="muted">Small personal loans and overdrafts, with the cost written down before you sign.</div></li>
+        <li><strong>Self-help groups (SHG).</strong><div class="muted">Group loans and bank linkage under the National Rural Livelihoods Mission.</div></li>
+        <li><strong>PM SVANidhi.</strong><div class="muted">Working-capital loans for street vendors.</div></li>
+        <li><strong>PM Mudra Yojana.</strong><div class="muted">Loans for small businesses and self-employed people, through banks and microfinance lenders.</div></li>
+        <li><strong>Jan Samarth portal.</strong><div class="muted">One place to see which government credit schemes you may qualify for.</div></li>
+        <li><strong>Your employer or family.</strong><div class="muted">A salary advance or a family loan can cost nothing.</div></li>
+      </ul>
+      <p class="fine" style="margin-top:10px">Eligibility and terms change. Confirm with the bank or the official website.</p>
+    </div>
+  </section>
+
+  <!-- RADAR -->
+  <section id="p-radar" class="panel" hidden>
+    <h2>Community Scam Radar</h2>
+    <p class="lede">Links and apps that people have rejected or reported. Only the website name or app name is shared. Your messages are never shared.</p>
+    <div class="card">
+      <h3>Reported by the community</h3>
+      <p class="muted" id="radarStatus" style="margin:0 0 6px">Connecting to the shared radar...</p>
+      <ul class="alt" id="radarList"></ul>
+    </div>
+    <div class="card">
+      <h3>Rejected by me</h3>
+      <ul class="alt" id="mineList"></ul>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section id="p-help" class="panel" hidden>
+    <h2>Someone is threatening me over a loan</h2>
+    <p class="lede">Many people have been through this. Harassing or shaming a borrower is not allowed under RBI rules, whatever the app says.</p>
+
+    <div class="card sos">
+      <h3>If you feel hopeless or unsafe, talk to someone now</h3>
+      <p style="margin:0">Call <a href="tel:14416">14416</a> (Tele-MANAS, free, 24x7) or <a href="tel:112">112</a> in an emergency. You can also tell a friend or family member right away. The debt can be sorted out. You matter more.</p>
+    </div>
+
+    <div class="card">
+      <h3>Your next steps</h3>
+      <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+      <div id="checklist"></div>
+      <p class="fine" style="margin-top:10px">Your ticks stay on this device only.</p>
+    </div>
+
+    <div class="card">
+      <h3>Write my complaint</h3>
+      <p class="muted" style="margin-top:0">Fill what you know. Take the draft to your local cyber crime cell, or use it on cybercrime.gov.in. You can call <a href="tel:1930" style="color:var(--brand);font-weight:700">1930</a> for financial cyber fraud.</p>
+      <label for="cName">Your name</label>
+      <input type="text" id="cName" autocomplete="name">
+      <label for="cPhone">Your phone number</label>
+      <input type="text" id="cPhone" inputmode="tel" autocomplete="tel">
+      <label for="cApp">Loan app name</label>
+      <input type="text" id="cApp">
+      <div class="grid2" style="margin-top:14px">
+        <div><label for="cAmt" style="margin-top:0">Amount borrowed (₹)</label><input type="number" inputmode="decimal" id="cAmt" min="0"></div>
+        <div><label for="cDate" style="margin-top:0">Date taken</label><input type="date" id="cDate"></div>
+      </div>
+      <div class="lab" style="margin-top:14px">What happened?</div>
+      <label class="opt"><input type="checkbox" name="cw" value="I received repeated threatening calls and messages."> Threatening calls and messages</label>
+      <label class="opt"><input type="checkbox" name="cw" value="Messages defaming me were sent to my contacts, family and friends."> Messages sent to my contacts</label>
+      <label class="opt"><input type="checkbox" name="cw" value="My photos were misused or morphed images were shared or threatened."> Photos misused or morphed</label>
+      <label class="opt"><input type="checkbox" name="cw" value="They used abusive language and demanded far more than the amount I borrowed."> Abuse, or demands for more than I borrowed</label>
+      <label class="opt"><input type="checkbox" name="cw" value="The app took access to my contacts, photos and messages without a genuine need."> App took my contacts, photos or SMS</label>
+      <label for="cNums">Phone numbers or accounts they used</label>
+      <input type="text" id="cNums" placeholder="Separate with commas">
+      <label for="cExtra">Anything else</label>
+      <textarea id="cExtra" style="min-height:80px" placeholder="Optional"></textarea>
+      <div class="row"><button class="btn" id="btnComplaint" type="button">Write complaint</button></div>
+      <div id="complaintOut" hidden>
+        <label for="draft" style="margin-top:16px">Your draft (you can edit it)</label>
+        <textarea id="draft" class="draft"></textarea>
+        <div class="row"><button class="btn" id="copyDraft" type="button">Copy complaint</button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Message to warn family and friends</h3>
+      <textarea id="famMsg" style="min-height:150px" readonly>Hi, please read this. I took a loan from an app and its agents are now harassing me. They may message or call you about me and may say untrue things.
+
+Please do not reply, do not pay anything, and do not click any links. Screenshot the message and send it to me. I am reporting this to the police. Thank you for standing with me.</textarea>
+      <div class="row"><button class="btn" id="copyFam" type="button">Copy message</button></div>
+    </div>
+    <p class="fine">Borrowise helps you organise and report. It is not legal advice and cannot stop the calls itself.</p>
+  </section>
+  </main>
+</div>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="in">
+    <button class="tab" data-tab="link" aria-current="page" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+      Link check
+    </button>
+    <button class="tab" data-tab="app" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+      App check
+    </button>
+    <button class="tab" data-tab="cost" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 5h10M7 9.5h10M7 5c5 0 8 1.2 8 4.5S12 14 7 14l8 6"/></svg>
+      Loan cost
+    </button>
+    <button class="tab" data-tab="radar" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l6-4.5"/></svg>
+      Radar
+    </button>
+    <button class="tab" data-tab="help" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.6-9.5 9-9.5 9z"/></svg>
+      Get help
+    </button>
+  </div>
+</nav>
+
+<script>
+(function(){
+  var $ = function(s, r){ return (r||document).querySelector(s); };
+  var esc = function(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+  var inr = function(n){ return '₹' + new Intl.NumberFormat('en-IN').format(Math.round(n)); };
+  var reduce = function(){ return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; };
+
+  /* ---------- tabs ---------- */
+  var tabs = document.querySelectorAll('.tab');
+  function showTab(name){
+    document.querySelectorAll('.panel').forEach(function(p){ p.hidden = (p.id !== 'p-' + name); });
+    tabs.forEach(function(t){
+      if(t.dataset.tab === name) t.setAttribute('aria-current','page'); else t.removeAttribute('aria-current');
+    });
+    window.scrollTo(0,0);
+    if(name === 'radar'){ renderRadar(); renderMine(); }
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ showTab(t.dataset.tab); }); });
+
+  /* ---------- gauge ---------- */
+  function pt(deg, r){ var a = deg*Math.PI/180; return [100 + r*Math.cos(a), 100 - r*Math.sin(a)]; }
+  function arcPath(s0, s1, r){
+    var p0 = pt(180-1.8*s0, r), p1 = pt(180-1.8*s1, r);
+    return 'M'+p0[0].toFixed(2)+' '+p0[1].toFixed(2)+' A'+r+' '+r+' 0 0 1 '+p1[0].toFixed(2)+' '+p1[1].toFixed(2);
+  }
+  function gaugeSVG(score){
+    var st = 'fill="none" stroke-width="16"';
+    return '<svg class="gauge" viewBox="0 0 200 122" role="img" aria-label="Risk score '+score+' out of 100">'
+      + '<path d="'+arcPath(0,29.2,80)+'" '+st+' stroke="var(--ok)"/>'
+      + '<path d="'+arcPath(30.8,59.2,80)+'" '+st+' stroke="var(--warn)"/>'
+      + '<path d="'+arcPath(60.8,100,80)+'" '+st+' stroke="var(--bad)"/>'
+      + '<g class="needle" data-score="'+score+'" transform="rotate(-90 100 100)"><line x1="100" y1="100" x2="100" y2="36" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/></g>'
+      + '<circle cx="100" cy="100" r="9" fill="var(--ink)"/>'
+      + '<text x="20" y="118" text-anchor="middle" font-size="10" fill="var(--muted)">0</text>'
+      + '<text x="180" y="118" text-anchor="middle" font-size="10" fill="var(--muted)">100</text>'
+      + '</svg>';
+  }
+  function animateNeedle(root){
+    var g = root.querySelector('.needle'); if(!g) return;
+    var target = (Number(g.dataset.score) - 50) * 1.8;
+    if(reduce()){ g.setAttribute('transform','rotate('+target+' 100 100)'); return; }
+    var start = -90, t0 = performance.now(), dur = 900;
+    function step(now){
+      var p = Math.min(1, (now - t0)/dur), e = 1 - Math.pow(1-p, 3);
+      g.setAttribute('transform','rotate('+(start + (target-start)*e)+' 100 100)');
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  function band(s){
+    if(s >= 60) return {k:'bad', label:'High risk', note:'Several strong warning signs. Do not go ahead.'};
+    if(s >= 30) return {k:'warn', label:'Be careful', note:'Some warning signs. Check the points below before you go further.'};
+    return {k:'ok', label:'No red flags found', note:'That does not mean it is safe. A brand-new scam will not match any rule yet.'};
+  }
+  function renderRisk(el, o){
+    var b = band(o.score);
+    var sigs = o.signals.map(function(s){
+      return '<li class="sig"><span class="dot '+s.sev+'"></span><div><strong>'+esc(s.t)+'</strong><div class="muted">'+esc(s.d)+'</div></div></li>';
+    }).join('');
+    if(!sigs) sigs = '<li class="sig"><span class="dot info"></span><div>Nothing matched our checks.</div></li>';
+    var adv = (o.advice[b.k] || []).map(function(a){ return '<li>'+esc(a)+'</li>'; }).join('');
+    var rd = o.radar || null;
+    var allowReject = !!(rd && rd.allowReject && o.score >= 60);
+    el.innerHTML =
+      '<div class="card">'
+      + (o.title ? '<p class="subject">'+esc(o.title)+'</p>' : '')
+      + gaugeSVG(o.score)
+      + '<div class="verdict"><span class="pill '+b.k+'">'+b.label+'</span><span class="score">Risk score '+o.score+' out of 100</span></div>'
+      + '<p class="verdict-note">'+esc(b.note)+'</p>'
+      + (rd && rd.shareable ? '<p class="muted radar-line" data-kind="'+esc(rd.kind)+'" data-key="'+esc(rd.key)+'" style="text-align:center;margin:10px 0 0"></p>' : '')
+      + '</div>'
+      + (allowReject ? '<div class="card reject-card"></div>' : '')
+      + '<div class="card"><h3>Why this score</h3><ul class="sigs">'+sigs+'</ul></div>'
+      + '<div class="card"><h3>What to do</h3><ul class="steps">'+adv+'</ul></div>'
+      + '<p class="fine">'+esc(o.fine)+'</p>';
+    el.hidden = false;
+    animateNeedle(el);
+    if(allowReject) mountReject(el.querySelector('.reject-card'), rd);
+    refreshCommunityLines();
+    el.scrollIntoView({behavior: reduce() ? 'auto' : 'smooth', block:'start'});
+  }
+  function showError(el, msg){
+    el.innerHTML = '<div class="card err" role="alert">'+esc(msg)+'</div>';
+    el.hidden = false;
+  }
+
+  /* ---------- helpers ---------- */
+  var sampleMode = false;
+  function safeKey(k){ return String(k).toLowerCase().replace(/[^a-z0-9.\-_~:@+]/g,'_').slice(0,120); }
+  function hash(str){ var h = 5381; for(var i = 0; i < str.length; i++){ h = ((h << 5) + h + str.charCodeAt(i)) | 0; } return Math.abs(h).toString(36); }
+  function ago(ts){
+    if(!ts) return '';
+    var m = Math.max(0, Math.round((Date.now() - ts) / 60000));
+    if(m < 1) return 'just now';
+    if(m < 60) return m + ' min ago';
+    var h = Math.round(m / 60); if(h < 24) return h + ' h ago';
+    var d = Math.round(h / 24); return d + (d === 1 ? ' day ago' : ' days ago');
+  }
+  function kindWord(kind){ return kind === 'app' ? 'app' : 'link'; }
+
+  /* ---------- my rejects (this device) ---------- */
+  function loadRejects(){ try { var a = JSON.parse(localStorage.getItem('kaavalai-rejects') || '[]'); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
+  function saveRejects(a){ try { localStorage.setItem('kaavalai-rejects', JSON.stringify(a.slice(0, 100))); } catch(e){} }
+  function isRejected(kind, key){ return loadRejects().some(function(r){ return r.kind === kind && r.key === key; }); }
+
+  /* ---------- community radar (shared, optional) ---------- */
+  var radar = {db:null, uid:null, state:'connecting', items:{}, error:false, readOnly:false};
+  function localItems(){
+    var out = {};
+    loadRejects().forEach(function(r){ out[r.kind + '|' + r.key] = {kind:r.kind, key:r.key, label:String(r.label).slice(0, 60), count:1, last:r.at, mine:true}; });
+    return out;
+  }
+  function radarCount(kind, key){ var it = radar.items[kind + '|' + key]; return it ? it.count : 0; }
+  function refreshCommunityLines(){
+    document.querySelectorAll('.radar-line').forEach(function(p){
+      var kind = p.getAttribute('data-kind'), key = p.getAttribute('data-key'), w = kindWord(kind);
+      if(radar.state === 'off'){
+        p.textContent = localItems()[kind + '|' + key] ? 'Demo mode: you rejected this ' + w + ' on this device.' : 'Demo mode: shared reports are not available here.';
+        return;
+      }
+      if(radar.state !== 'live'){ p.textContent = ''; return; }
+      var c = radarCount(kind, key);
+      p.textContent = c > 0
+        ? (c === 1 ? '1 person has rejected or reported this ' + w + '.' : c + ' people have rejected or reported this ' + w + '.')
+        : 'Nobody has reported this ' + w + ' on the Community Radar yet.';
+    });
+  }
+  function renderRadar(){
+    var st = $('#radarStatus'), ul = $('#radarList'); if(!st || !ul) return;
+    if(radar.state === 'connecting'){ st.textContent = 'Connecting to the shared radar...'; ul.innerHTML = ''; return; }
+    var src = radar.state === 'off' ? localItems() : radar.items;
+    var arr = Object.keys(src).map(function(k){ return src[k]; });
+    var total = arr.reduce(function(a, it){ return a + it.count; }, 0);
+    arr.sort(function(a, b){ return (b.count - a.count) || (b.last - a.last); });
+    var msg;
+    if(radar.state === 'off'){
+      msg = 'Demo mode: shared reports are not available here, so reports stay on this device.' + (total ? '' : ' Reject a risky link or report an app and it will show up here.');
+    } else {
+      msg = radar.error ? 'Could not load shared reports right now.'
+        : (total ? 'Live. ' + total + ' report' + (total === 1 ? '' : 's') + ' so far.' : 'Live. No reports yet. When someone rejects a risky link or reports an app, it shows up here.');
+      if(!radar.uid) msg += ' Sign in to add your own reports.';
+      else if(radar.readOnly) msg += ' Your account can view reports but not add them.';
+    }
+    st.textContent = msg;
+    ul.innerHTML = arr.slice(0, 20).map(function(it){
+      return '<li><div class="rrow"><div><strong>' + esc(it.label) + '</strong><div class="muted">' + (it.kind === 'app' ? 'App' : 'Link') + ' · last reported ' + esc(ago(it.last)) + (it.mine ? (radar.state === 'off' ? ' · saved on this device' : ' · includes you') : '') + '</div></div><span class="count" aria-label="' + it.count + ' reports">' + it.count + '</span></div></li>';
+    }).join('');
+  }
+  function renderMine(){
+    var ul = $('#mineList'); if(!ul) return;
+    var list = loadRejects();
+    if(!list.length){ ul.innerHTML = '<li class="empty">Nothing yet. When you reject a risky link or report an app, it appears here.</li>'; return; }
+    ul.innerHTML = list.map(function(r){
+      return '<li><div class="rrow"><div><strong>' + esc(r.label) + '</strong><div class="muted">' + (r.kind === 'app' ? 'App' : 'Link or message') + ' · ' + esc(ago(r.at)) + '</div></div><button type="button" class="btn ghost small" data-kind="' + esc(r.kind) + '" data-key="' + esc(r.key) + '" data-s="' + (r.s ? '1' : '') + '">Remove</button></div></li>';
+    }).join('');
+  }
+  $('#mineList').addEventListener('click', async function(e){
+    var b = e.target.closest('button[data-key]'); if(!b) return;
+    await undoReject(b.getAttribute('data-kind'), b.getAttribute('data-key'), !!b.getAttribute('data-s'));
+  });
+  async function initRadar(){
+    try {
+      if(!window.claude || typeof claude.use !== 'function'){ radar.state = 'off'; renderRadar(); return; }
+      var db = await claude.use('db');
+      if(!db){ radar.state = 'off'; renderRadar(); refreshCommunityLines(); return; }
+      var user = await claude.use('user');
+      radar.uid = user ? await user.id() : null;
+      radar.db = db;
+      radar.state = 'live';
+      db.collection('reports').limit(1000).onSnapshot(function(snap){
+        var items = {};
+        snap.docs.forEach(function(d){
+          var v = d.data() || {};
+          if(typeof v.key !== 'string' || (v.kind !== 'link' && v.kind !== 'app')) return;
+          var id = v.kind + '|' + v.key;
+          var it = items[id] || (items[id] = {kind:v.kind, key:v.key, label:String(v.label || v.key).slice(0, 60), count:0, last:0, mine:false});
+          it.count++;
+          if(typeof v.at === 'number' && v.at > it.last) it.last = v.at;
+          if(radar.uid && v.uid === radar.uid) it.mine = true;
+        });
+        radar.items = items; radar.error = false;
+        renderRadar(); refreshCommunityLines();
+      }, function(){ radar.error = true; renderRadar(); });
+      renderRadar(); refreshCommunityLines();
+    } catch(e){ radar.state = 'off'; renderRadar(); refreshCommunityLines(); }
+  }
+  async function reportItem(kind, key, label){
+    if(!radar.db || !radar.uid) return {ok:false};
+    try {
+      await radar.db.collection('reports').doc(kind + '_' + key + '_' + radar.uid).set({kind:kind, key:key, label:String(label).slice(0, 60), uid:radar.uid, at:Date.now()});
+      return {ok:true};
+    } catch(e){ if(e && e.code === 'invalid_argument') radar.readOnly = true; renderRadar(); return {ok:false}; }
+  }
+  async function unreportItem(kind, key){
+    if(!radar.db || !radar.uid) return;
+    try { await radar.db.collection('reports').doc(kind + '_' + key + '_' + radar.uid).delete(); } catch(e){}
+  }
+  async function rejectItem(kind, key, label, shareable){
+    var list = loadRejects().filter(function(r){ return !(r.kind === kind && r.key === key); });
+    list.unshift({kind:kind, key:key, label:label, at:Date.now(), s:!!shareable});
+    saveRejects(list);
+    var res = shareable ? await reportItem(kind, key, label) : {ok:false};
+    renderMine(); renderRadar(); refreshCommunityLines();
+    return res;
+  }
+  async function undoReject(kind, key, shareable){
+    saveRejects(loadRejects().filter(function(r){ return !(r.kind === kind && r.key === key); }));
+    if(shareable) await unreportItem(kind, key);
+    renderMine(); renderRadar(); refreshCommunityLines();
+    document.querySelectorAll('.reject-card').forEach(function(c){ if(c._repaint) c._repaint(); });
+  }
+  function mountReject(slot, rd){
+    var doneText = rd.kind === 'app'
+      ? 'Do not install it. If you already did, uninstall it and remove its permissions in your phone settings.'
+      : 'Do not open it. Delete the message and block the sender.';
+    function paint(){
+      if(!isRejected(rd.kind, rd.key)){
+        slot.innerHTML = '<h3>Your decision</h3><p class="muted" style="margin:0 0 10px">Do not trust it? Reject it. We will remember it on this device' + (rd.shareable && radar.state === 'live' ? ' and warn other people through the Community Radar.' : '.') + '</p>'
+          + '<div class="row" style="margin-top:0"><button type="button" class="btn danger">' + esc(rd.rejectLabel) + '</button></div>';
+        slot.querySelector('button').addEventListener('click', async function(){
+          this.disabled = true; this.textContent = 'Rejecting...';
+          rd._res = await rejectItem(rd.kind, rd.key, rd.label, rd.shareable);
+          paint(); refreshCommunityLines();
+        });
+      } else {
+        var note;
+        if(!rd.shareable) note = 'Saved on this device.';
+        else if(!rd._res) note = 'You rejected this earlier.';
+        else if(rd._res.ok) note = 'Reported to the Community Radar.';
+        else if(radar.db) note = 'Saved on this device. Your account cannot add shared reports.';
+        else note = 'Demo mode: saved on this device only.';
+        slot.innerHTML = '<span class="pill ok">Rejected</span><p style="margin:10px 0 4px"><strong>' + esc(doneText) + '</strong></p><p class="muted" style="margin:0 0 10px">' + esc(note) + '</p>'
+          + '<div class="row" style="margin-top:0"><button type="button" class="btn ghost small">Undo</button></div>';
+        slot.querySelector('button').addEventListener('click', async function(){
+          this.disabled = true;
+          await undoReject(rd.kind, rd.key, rd.shareable);
+          rd._res = null; paint(); refreshCommunityLines();
+        });
+      }
+    }
+    slot._repaint = paint;
+    paint();
+  }
+
+  /* ---------- cost maths ---------- */
+  function loanCost(received, repay, days){
+    var extra = repay - received;
+    var pct = extra / received * 100;
+    return {extra: extra, pct: pct, apr: pct * (365/days)};
+  }
+  function fmtPct(n){ return new Intl.NumberFormat('en-IN', {maximumFractionDigits: n >= 100 ? 0 : 1}).format(n) + '%'; }
+
+  /* ---------- link & message check ---------- */
+  var OFFICIAL = {
+    sbi:['sbi.co.in','onlinesbi.sbi','sbi.bank.in'], hdfc:['hdfcbank.com','hdfc.bank.in'], icici:['icicibank.com','icici.bank.in'],
+    axis:['axisbank.com','axis.bank.in'], rbi:['rbi.org.in'], paytm:['paytm.com'], phonepe:['phonepe.com'],
+    npci:['npci.org.in'], kotak:['kotak.com','kotak.bank.in'], pnb:['pnbindia.in','pnb.bank.in'],
+    bankofbaroda:['bankofbaroda.in','bankofbaroda.com'], gpay:['pay.google.com'], bajajfinserv:['bajajfinserv.in'], mudra:['mudra.org.in']
+  };
+  var SHORT_BRANDS = ['sbi','rbi','axis','pnb','gpay'];
+  var SHORTENERS = ['bit.ly','tinyurl.com','t.co','cutt.ly','rb.gy','is.gd','goo.gl','shorturl.at','tiny.cc','ow.ly','rebrand.ly','bl.ink','s.id','v.gd'];
+  var SUS_TLDS = ['xyz','top','click','loan','work','icu','vip','cc','buzz','online','site','live','shop','rest','tk','ml','gq','cf','ga','cyou','monster','sbs','lol','fun','today','link'];
+  var FREE_HOSTS = ['blogspot.com','weebly.com','wixsite.com','web.app','firebaseapp.com','github.io','netlify.app','vercel.app','pages.dev','000webhostapp.com','godaddysites.com'];
+
+  function extractUrls(text){
+    var re = /(?:https?:\/\/|www\.)[^\s<>"'`]+|(?<![@\w.\-\/])(?:[a-z0-9\-]+\.)+(?:com|in|net|org|xyz|top|click|loan|work|icu|vip|cc|buzz|online|site|live|shop|me|co|app|apk|link|info|biz|ly|gl|tk|ml|ga|cf|gq|sbs|fun|today)\b(?:\/[^\s<>"'`]*)?/gi;
+    var out = [], m;
+    while((m = re.exec(text)) !== null){ out.push(m[0].replace(/[.,;:!?)\]]+$/, '')); }
+    return out;
+  }
+  function endsWithDomain(host, dom){ return host === dom || host.endsWith('.' + dom); }
+
+  function analyseLink(text){
+    var signals = [], urlScore = 0, textScore = 0, firstHost = '', topHost = '';
+    var seen = {};
+    extractUrls(text).forEach(function(u){
+      var h;
+      try { h = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u); } catch(e){ return; }
+      var host = h.hostname.toLowerCase().replace(/^www\./,'');
+      var key = host + h.pathname; if(seen[key]) return; seen[key] = 1;
+      if(!firstHost) firstHost = host;
+      var s = 0;
+      function add(pts, sev, t, d){ s += pts; signals.push({sev:sev, t:t, d:host + ': ' + d, pts:pts}); }
+      var path = h.pathname + h.search;
+      if(/\.apk(\?|$|#)/i.test(path)) add(40,'bad','Link goes straight to an app file (.apk)','Installing apps from outside the Play Store is the main way fake loan apps spread.');
+      if(h.username) add(25,'bad','Address hides the real website','Everything before the @ sign is a decoy. The real site is the part after it.');
+      if(/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) add(30,'bad','Link uses a number instead of a name','Real lenders use a proper website name, not a raw IP address.');
+      if(host.indexOf('xn--') !== -1) add(25,'bad','Address uses look-alike characters','Some letters may be foreign look-alikes designed to copy a real brand.');
+      var tokens = host.split(/[.\-]/);
+      var brandHit = null;
+      Object.keys(OFFICIAL).forEach(function(b){
+        if(brandHit) return;
+        var hit = SHORT_BRANDS.indexOf(b) !== -1 ? tokens.indexOf(b) !== -1 : tokens.some(function(t){ return t.indexOf(b) !== -1; });
+        if(hit){
+          var official = OFFICIAL[b].some(function(d){ return endsWithDomain(host, d); }) || /\.bank\.in$/.test(host);
+          if(!official) brandHit = b;
+        }
+      });
+      if(brandHit) add(35,'bad','Uses a bank or payment brand name, but is not their site','Scammers copy trusted names like ' + brandHit.toUpperCase() + '. Their real address is different.');
+      if(SHORTENERS.indexOf(host) !== -1) add(20,'warn','Shortened link hides the destination','You cannot see where it leads. Never tap shortened links in loan offers.');
+      var tld = host.split('.').pop();
+      if(SUS_TLDS.indexOf(tld) !== -1) add(20,'warn','Unusual website ending (.' + tld + ')','Cheap endings like this are common on scam sites. Real lenders mostly use .com, .in or .co.in.');
+      if(FREE_HOSTS.some(function(d){ return endsWithDomain(host, d); })) add(15,'warn','Hosted on a free website builder','A registered lender would normally have its own domain name.');
+      var hy = (host.match(/-/g) || []).length;
+      if(hy >= 2 || host.split('.').length >= 4) add(10,'warn','Odd-looking address','Many hyphens or sub-sections often signal a throwaway site.');
+      if(h.protocol === 'http:') add(10,'warn','Not a secure connection','The address starts with http, not https.');
+      if(s > urlScore){ urlScore = s; topHost = host; }
+    });
+
+    function addT(re, pts, sev, t, d){
+      if(re.test(text)){ textScore += pts; signals.push({sev:sev, t:t, d:d, pts:pts}); }
+    }
+    addT(/\b(otp|pin|cvv|password|passcode)\b/i, 30,'bad','Asks for an OTP, PIN, CVV or password','No genuine lender or bank asks for these through a message.');
+    addT(/\b(aadhaar|aadhar|pan card|pan number|card number|kyc)\b/i, 15,'warn','Asks for ID or card details','Do not send ID details through a message or a link you did not look up yourself.');
+    addT(/(processing|registration|advance|insurance|verification|file|gst|stamp)\s*(fee|charge)s?|pay\s+(first|upfront|in advance)|refundable/i, 25,'bad','Wants a fee before you get the loan','Asking you to pay first is a classic advance-fee scam. Real lenders deduct charges from the loan and show them in writing.');
+    addT(/pre[- ]?approved|no (documents?|cibil|credit (check|score)|income proof|collateral)|guaranteed (loan|approval)|instant (loan|approval|cash|disbursal)|\b0\s?% (interest|processing)|without (documents?|cibil|kyc)/i, 15,'warn','Too-good-to-be-true promises','Loans with no checks and instant approval are how predatory apps attract people.');
+    addT(/today only|last chance|limited (time|offer)|expires?|within \d+ ?(hours?|hrs|minutes|mins)|act now|urgent(ly)?|immediately|hurry/i, 10,'warn','Pushes you to hurry','Scammers create pressure so you do not stop to think.');
+    addT(/legal action|arrest|police (case|complaint)|\bfir\b|court notice|your contacts|your family|morphed|defame|shame/i, 20,'bad','Threatening language','Threats and shaming are how illegal loan apps pressure borrowers.');
+    addT(/(account|card|sim).{0,30}(blocked|suspended|frozen|deactivated)/i, 10,'warn','Warns your account will be blocked','A fear tactic used to make you click quickly.');
+    addT(/(install|download).{0,25}(app|apk)/i, 10,'warn','Tells you to install an app','Be careful with any message that pushes you to install a loan app.');
+
+    var score = Math.min(100, urlScore + textScore);
+    signals.sort(function(a,b){ return b.pts - a.pts; });
+    var shown = topHost || firstHost;
+    return {score: score, signals: signals, title: shown ? 'Link found: ' + shown : 'Pasted message', hasUrl: !!shown, host: shown};
+  }
+
+  var LINK_ADVICE = {
+    bad: ["Do not tap the link or install anything from it.","Never share OTPs, PINs, card details or ID photos.","If you already lost money, call 1930 now or report at cybercrime.gov.in.","Block the sender and warn family who may get the same message."],
+    warn: ["Do not act on it yet. Find the lender's official website or app yourself and check there.","Be wary of anything that rushes you or asks you to pay first.","If you are unsure, ask someone you trust before replying."],
+    ok: ["Still confirm the sender through the company's official app or website.","Never share OTPs or PINs with anyone.","Check again if the message changes or a new link arrives."]
+  };
+
+  $('#btnLink').addEventListener('click', function(){
+    var out = $('#linkOut');
+    var isSample = sampleMode; sampleMode = false;
+    var text = $('#linkInput').value.trim();
+    if(text.length < 5){ showError(out, 'Paste a link or message first, then press Check message.'); return; }
+    var r = analyseLink(text);
+    var host = r.host;
+    var rd = {kind:'link', key: host ? safeKey(host) : 'msg' + hash(text), label: (host || 'Pasted message') + (isSample ? ' (sample)' : ''), shareable: !!host, allowReject: true, rejectLabel: host ? 'Reject this link' : 'Reject this message'};
+    renderRisk(out, {
+      radar: rd,
+      score: r.score, title: r.title, signals: r.signals, advice: LINK_ADVICE,
+      fine: r.hasUrl
+        ? 'Borrowise is a rule-based guide, not a final verdict. It cannot see how new a website is or check live blocklists. A site registered only days ago is a common scam sign, and you can look up its age on a WHOIS service.'
+        : 'Borrowise is a rule-based guide, not a final verdict. No link was found in what you pasted, so only the wording was checked.'
+    });
+  });
+  $('#exLink').addEventListener('click', function(){
+    sampleMode = true;
+    $('#linkInput').value = 'URGENT: Your pre-approved loan of Rs 50,000 is ready, no documents needed! Pay a refundable processing fee and install the app now: http://sbi-instant-loan.xyz/get.apk or bit.ly/3xLoan. Offer expires within 2 hours.';
+    $('#btnLink').click();
+  });
+
+  /* ---------- RBI directory snapshot ---------- */
+  var DLA_DATE = '8 Oct 2026';
+  var DLA_RAW = `30daysLoan|GIRDHAR FINLEASE
+360 ONE Wealth – Lending|360 ONE PRIME
+4Fin|3 regulated entities
+50 Fin|INFINA FINANCE
+50Fin|2 regulated entities
+50fin Website|BAJAJ FINANCE
+50fin: Loan Against Securities App|^
+5minuteloan|AGRIM FINCAP
+Aadi Finance|FDPL FINANCE
+ABCD|SI CREVA CAPITAL SERVICES
+ABCD Aditya Birla Capital App|2 regulated entities
+Abhicash|C.N.M.P. INVESTMENTS
+Abhiloans|DMI FINANCE
+Abhimoney|C.N.M.P. INVESTMENTS
+AbhiRupee|ANUPAM FINSERV
+ACHIIEVERS QUICK GOLD LOAN|ACHIIEVERS FINANCE INDIA
+Actoloan|PRAKASH CHEMTEX (INDIA)
+Aditya Birla Capital Digital|2 regulated entities
+ADOBE|HDFC BANK
+AEON FAST|AEON CREDIT SERVICE INDIA
+AFIL LLC|ACHIIEVERS FINANCE INDIA
+AGI MONEEY|AGIWAL FINANCE
+AHAsolar Technologies Limited|ECOFY FINANCE
+Airpay Capital|3 regulated entities
+Airtel App|2 regulated entities
+Airtel Thanks|6 regulated entities
+Airtel Website|BAJAJ FINANCE
+AlphaRupee|SONU MARKETING
+Alrightyy|F MEC INTERNATIONAL FINANCIAL SERVICES
+Amazon|3 regulated entities
+amazon.in|KARUR VYSYA BANK
+Anand Rathi Global Finance Limited|ANAND RATHI GLOBAL FINANCE
+Ananda Dairy Limited|ZEAL HOLDINGS
+Android - Kotak Bank (New)|KOTAK MAHINDRA BANK
+Android - Kotak Bank 811 Mobile App|^
+Android -Kotak Bank (Old)|^
+Angel One|7 regulated entities
+Angel One's Super App|2 regulated entities
+Anytime Rupee|FINAGLE FINANCIAL SERVICES
+Apollo Cash|APOLLO FINVEST (INDIA)
+App Store: Axis Mobile: Pay, Invest & UPI|AXIS BANK
+Apply for Credit Card|PUNJAB NATIONAL BANK
+Apply for Credit Card PNB SARAL|^
+Arthum|2 regulated entities
+Aryse Fin|RESPO FINANCIAL CAPITAL
+AryseFin|2 regulated entities
+asapfinance.in|CIECO SECURITIES
+Ashapurti Loans|GOLDEN LEGAND LEASING & FINANCE
+Asirvad Online Gold Loan (OGL)|ASIRVAD MICRO FINANCE
+Aspire Fintech Private Limited|LIGHT MICRO FINANCE
+Aspire Fintech Private Limited (Web based paltform)|AVANTI FINANCE
+AssistFin Technologies Private Limited|ALTURA FINANCIAL SERVICES
+ATD MONEY|ATD FINANCIAL SERVICES
+ATM Cred|2 regulated entities
+AU 0101 Business - Internet Banking|AU SMALL FINANCE BANK
+AU 0101 Business - Mobile Banking|^
+AU 0101 Mobile Banking|^
+AU 0101 Net Banking|^
+AU Website|^
+AURO Chatbot|^
+Ausha Digital Pvt Ltd|JIO CREDIT
+Autovert Technologies Private Limited|ECOFY FINANCE
+Avanse|AVANSE FINANCIAL SERVICES
+Avanti|2 regulated entities
+Axio|3 regulated entities
+Axis Bank Internet Banking|AXIS BANK
+Axis Bank Mobile Banking|^
+Axis Bank Neo for Corporate|^
+Axis Bank Website|^
+Axis Finance Limited|AXIS FINANCE
+Axis Mobile: Pay, Invest & UPI|AXIS BANK
+Ayaan Finserve India Pvt. Ltd|AYAAN FINSERVE INDIA
+Ayushman Loan|PAWANSUT HOLDINGS
+b4salary|KISGA LEASING & FINANCE
+Bachatt|3 regulated entities
+Bachhat|R.K. BANSAL FINANCE
+Bahi Khata Loans|RESPO FINANCIAL CAPITAL
+Bajaj Finance App|BAJAJ FINANCE
+Bajaj Finserv|LENDINGKART FINANCE
+Bajaj Finserv Direct Limited|JIO CREDIT
+Bajaj Finserv Market|2 regulated entities
+Bajaj Finserv Markets Loan App|3 regulated entities
+Bajaj Finserv Markets LoanApp|GODREJ FINANCE
+Bajaj Markets|8 regulated entities
+Bajaj Markets Website|BAJAJ FINANCE
+bajajfinservmarkets|2 regulated entities
+BajajMarkets|R.K. BANSAL FINANCE
+Bank's website|IDBI BANK
+BankBazaar|MUTHOOT FINCORP
+BankSathi|INCRED FINANCIAL SERVICES
+Betterplace Money|AVANTI FINANCE
+BFL Website|BAJAJ FINANCE
+Bharat Business Loans|SAMPATHI CREDITS
+Bharat Khata|2 regulated entities
+BharatLoan: Personal Loan App|SOLOMON CAPITAL
+BharatNXT|FDPL FINANCE
+BharatPe|2 regulated entities
+BharatPe for Business|15 regulated entities
+BharatPe UPI|YES BANK
+BHIM|DMI FINANCE
+Big Rock Loan|PANAFIC INDUSTRIALS
+Bikewale|INCRED FINANCIAL SERVICES
+Billcut|L&T FINANCE
+Billcut.com|DMI FINANCE
+BimaPay|2 regulated entities
+Bitrocket|2 regulated entities
+Bitrocket by CheQ|AXIS BANK
+Blink Credit|ADITSH FINTECH
+BlinkMoney|DSP FINANCE
+Blinkmoney Website|BAJAJ FINANCE
+Blinkr|DEV-AASHISH CAPITAL
+Bluebear Technology Private Limited (Propelld)|EDGRO FINANCE
+Borrowera|ACOLYTE FINSERV
+Branch International Financial Services Private Limited|BRANCH INTERNATIONAL FINANCIAL SERVICES
+Branch- Personal Cash Loan App|2 regulated entities
+Branch-Instant Personal Loan|NORTHERN ARC CAPITAL
+BRIDGE|PADMALAYA FINSERVE
+Bridge2Capital|IIFL FINANCE
+BrightLoans|AVINASH CAPITAL MARKETS
+Buddy Loan|EPIMONEY
+Buddy Loan: Personal Loan App|^
+Buddy Loans|2 regulated entities
+Buddyloan|LENDINGKART FINANCE
+Buddyloans|EARLYSALARY SERVICES
+Business Loans (Small Ticket Business Loans)|INDUSIND BANK
+CAPITAL CONNECT|NIYOGIN FINTECH
+Capital Gold Loan|CAPITAL TRUST
+Capital Now|GOLDLINE FINANCE
+Capri Loans|CAPRI GLOBAL CAPITAL
+Car Loan|BANK OF MAHARASHTRA
+careinsurance|ZEAL HOLDINGS
+CarePal|2 regulated entities
+CarePay|2 regulated entities
+Cars24|EARLYSALARY SERVICES
+Carz4Sale|CARS24 FINANCIAL SERVICES
+Cash By Cred|2 regulated entities
+CASH MY SALARY|REGENCY FINCORP
+Cash To You|MOUNT SHIKHAR FINANCIAL SERVICES
+Cash247|MEGHDOOT MERCANTILE
+Cashboxx|BARWALA LEASING & FINANCE
+Cashbridge|RACHIT CAPITAL SERVICES
+CASHe|6 regulated entities
+CASHe:Quick Personal Loan App|NORTHERN ARC CAPITAL
+Cashkuber|FDPL FINANCE
+CashNandi - Instant Loan App|NAPEAN FINVEST
+CASHO|FINALEAP FINSERV
+Cashone|S.B.N. LEASING AND FINANCE
+Cashpe|NISKHA FINANCE
+CashPey – India’s Own Loan App|2 regulated entities
+CashPo|ORRISH FINANCE
+Cashvia|GROW MONEY CAPITAL
+Catfin|GODREJ FINANCE
+Chabot Solution|S K FINANCE
+Chinmay - Personal Loan App|TAPSTART CAPITAL
+Chinmay Finlease Limited|2 regulated entities
+Choice Connect|2 regulated entities
+Chola One|CHOLAMANDALAM INVESTMENT AND FINANCE COMPANY
+CINB|STATE BANK OF INDIA
+CIRCLEPE|2 regulated entities
+Claimfriendy|2 regulated entities
+Clayyo|FINTREE FINANCE
+ClickmyLoan|F MEC INTERNATIONAL FINANCIAL SERVICES
+ClickPe|SURAT PEOPLE'S CO-OP BANK
+CLICKRA|SONU MARKETING
+CMC BANK HAVERI|HAVERI CARDAMOM MERCHANTS' CO-OP BANK
+CoBorrow|ASH GROVE CAPITAL
+Corporate Internet Banking|ICICI BANK
+Cover Mantra|FDPL FINANCE
+CP Advisor|FDPL FINANCE
+Cready|2 regulated entities
+Cred|12 regulated entities
+Cred Buddha|R.K. BANSAL FINANCE
+CRED: UPI, Credit Cards, Bills|DBS BANK INDIA
+CredBuddha|2 regulated entities
+Credbuddy|AMPIRE FINANCE
+Credcashy|EVERLIGHT HOLDING
+Credfin: Instant Personal Loans|ARHAM FINANCE & INVESTMENT SERVICES
+Credifit|RESPO FINANCIAL CAPITAL
+Credila's LOS|CREDILA FINANCIAL SERVICES
+Credila's Website|^
+Credilio Financial Technologies|INCRED FINANCIAL SERVICES
+Credit Fair|2 regulated entities
+Credit line on UPI|CITY UNION BANK
+Credit Mantri|R.K. BANSAL FINANCE
+Credit Mines|MAHAN INDUSTRIES
+Credit Saison India|KISETSU SAISON FINANCE (INDIA)
+Credit4Sure Pro|MAHAVIRA FINLEASE
+Creditas Business Solutions|YES BANK
+Creditas Solutions Private Limited|INDUSIND BANK
+CREDITBAY|MUKESH BABU FINANCIAL SERVICES
+Creditcase|DSP FINANCE
+CreditFit|5 regulated entities
+CreditHaat|4 regulated entities
+CreditJar|D. S. INTEGRATED FINSEC
+Creditlab|SONU MARKETING
+CreditLinks|3 regulated entities
+Creditmantri|4 regulated entities
+Creditmantri Website|SHRIRAM FINANCE
+CreditMitra|SAJAN INTERNATIONAL
+Creditpey|DIGNER FINLEASE & INVESTMENT
+CreditSea|3 regulated entities
+Creditt+|2 regulated entities
+creditwalle|WOODLAND SECURITIES
+CredMe|EXUDE VINCOM
+Crednidhi|MONEY FLOW PORTFOLIO
+Credo Cash|FDPL FINANCE
+CredSolve|RULOANS FINANCIAL SERVICES
+Credxpres|ACOLYTE FINSERV
+Customer Portal|MAHINDRA & MAHINDRA FINANCIAL SERVICES
+Customer Self Service Portal|NISSAN RENAULT FINANCIAL SERVICES INDIA
+DAP|HDFC BANK
+DASH|HDFC BANK
+Davinta|DAVINTA FINANCIAL SERVICES
+DayToDayLoan|NAMAN COMMODITIES
+DEZIRELOAN|LABHKARI FINCAP
+DGV Money|KARNATAKA BANK
+Dhancash|IND GLOBAL SECURITIES
+Dhani|DHANI LOANS AND SERVICES
+DhanLAP|2 regulated entities
+Dhanrishi|GAGANDEEP SERVICES
+Dhanvarsha|NAMAN FINLEASE
+Digi Agri Prime Plus|PUNJAB NATIONAL BANK
+DIGI DAIRY KCC|^
+Digi ECLGS|^
+Digi Gold Loan|^
+Digi HL Top up|^
+Digi Home CRG|^
+Digi Housing loan|^
+Digi MSME Loan|^
+Digi MSME Prime|^
+DIGI OD (Digital Overdraft)|YES BANK
+Digi PNB Shram Saarthi|PUNJAB NATIONAL BANK
+Digi Shreshtha|^
+Digicredit|KHOSYA FINLEASE
+DigiIndialoan|SKYRISE CREDIT & MARKETING
+Digital Car Loan|PUNJAB NATIONAL BANK
+Digital CC Renewal|UCO BANK
+Digital Eco system|ADITYA BIRLA CAPITAL
+Digital Education Loan|2 regulated entities
+Digital Education Loan PNB Pratibha|PUNJAB NATIONAL BANK
+Digital KCC on Jansamarth|^
+Digital Lending Application 1|BANK OF BARODA
+Digital Lending Application 2|^
+Digital Lending Application 3|^
+Digital Lending Application pages powered by Service Provider on Flipkart Online Shopping App|PAYU FINANCE INDIA
+Digital Lending Pages of PhonePe Lending on PhonePe Business: Merchant App|6 regulated entities
+Digital lending pages of PhonePe Lending on PhonePe consumer app|2 regulated entities
+Digital Lending Platform|3 regulated entities
+Digital Loans|2 regulated entities
+Digital MSME Loan upto 25 Lakh (Shishu, Kishore, Tarun, MSME Smart)|UCO BANK
+DIGITAL MUDRA|PUNJAB AND SIND BANK
+Digital personal loan|FEDERAL BANK
+Digital Personal Loans Application (PIL-STP)|HSBC
+Digital PM Vishwakarma|UNION BANK OF INDIA
+Digital PMSVANidhi|^
+Digital Quick Cash|TATA CAPITAL HOUSING FINANCE
+Digital SHG|PUNJAB NATIONAL BANK
+Digital SHG STP|UNION BANK OF INDIA
+Digital Term Loan|ICICI BANK
+DigitMoney|2 regulated entities
+Direct Credit Loan app|MEET FINANCE
+DMI Finance app|DMI FINANCE
+DpalLoan|D.PAL LEASING & FINANCE
+DRONA|SATYA MICROCAPITAL
+Duniya Finance|FOCUS INDUSTRIAL RESOURCES
+e PM SVANidhi|PUNJAB NATIONAL BANK
+E- OD/DL against FD/RD(IBS)|^
+E- OD/DL against FD/RD(PNB One App)|^
+e-GST|BANK OF MAHARASHTRA
+E-Platform|BANK OF INDIA
+EARLY WAGES|JUNOON CAPITAL SERVICES
+Easy Personal Loan - KreditBee|NORTHERN ARC CAPITAL
+Easy Renewal|PUNJAB NATIONAL BANK
+EasyCredit Personal Loans (DIY Platform)|INDUSIND BANK
+EasyDhan|RKD FINANCIAL SERVICES
+EASYFINCARE|AGARWAL ASSIGNMENTS
+Easypay|RESPO FINANCIAL CAPITAL
+EASYRUPEE LOAN|AGARWAL ASSIGNMENTS
+eazypaisa.com|SARAF CREDIT & PORTFOLIO
+ECONNECT / INDEL MONEY|INDEL MONEY
+ECS Credit|YAKSH INFINLEASE
+Edufin|AVANSE FINANCIAL SERVICES
+Eduvanz – Quick Education Loan|MAS FINANCIAL SERVICES
+Efundzz|2 regulated entities
+EmergencyPaisa|SUBURBAN FINANCE & INVESTMENT
+EMI Wale|AGARWAL ASSIGNMENTS
+Entitled Solutions Private Limited (Web based paltform)|AVANTI FINANCE
+ePayLater|2 regulated entities
+Equall|LTCV CREDIT
+Equitas 2.0|EQUITAS SMALL FINANCE BANK
+Equitas Netbanking|^
+ET Money|IDFC FIRST BANK
+ET Money: Mutual Funds, Stocks|DSP FINANCE
+EVERYDAY EMI|AGARWAL ASSIGNMENTS
+Expessoloan|HARVINDER FINANCE COMPANY
+Express Home Loan|ICICI BANK
+ezee|LULU FINANCIAL SERVICES (INDIA)
+Ezfinanz|SAI ROSHNI CAPITAL
+F 1 Speed Loan|AMPIRE FINANCE
+F1 Speed Loan|^
+Faircent|LENDINGKART FINANCE
+faircentpro.com|DMI FINANCE
+Famescore Pvt Ltd [Other - Disbursal Drawdown]|TATA CAPITAL
+Fast Paisa|AMPIRE FINANCE
+Fast Paise|^
+Fastsalary|RAMCHANDRA LEASING & FINANCE
+Fatakpaisa|NAMAN FINLEASE
+FatakPay|5 regulated entities
+FatakPay Digital Private Limited|PAHAL FINANCIAL SERVICES
+Fi Money|2 regulated entities
+Fibe|13 regulated entities
+Fibe Quick, Easy Personal Loan|NORTHERN ARC CAPITAL
+FiMoney|FEDERAL BANK
+FINAGG|HDFC BANK
+FinAGG SME|4 regulated entities
+FINANCE BABU|CP CAPITAL
+Finance Buddha|4 regulated entities
+Financebuddha|L&T FINANCE
+Finayo|F MEC INTERNATIONAL FINANCIAL SERVICES
+FINBUD FINANCIAL SERVICES LIMITED|INNOFIN SOLUTIONS (P2P)
+Fincrest Capital|FINTREE FINANCE
+FinCrif|INCRED FINANCIAL SERVICES
+FinEzzy|GROW MONEY CAPITAL
+Finfinity|3 regulated entities
+Finflux by M2P|GREAVES FINANCE
+Fingo Loan|NAMAN FINLEASE
+FinGrow|ARCHBRIDGE CAPITAL
+Finlab|2 regulated entities
+Finlab.one|INCRED FINANCIAL SERVICES
+Finnable|5 regulated entities
+Finnable Personal Loan App|5 regulated entities
+Finnova|RESPO FINANCIAL CAPITAL
+Finsall|6 regulated entities
+Finsall Resources Private Limited|RATNAAFIN CAPITAL
+Finsall Resources Pvt Ltd.|2 regulated entities
+Finshell Pay|EARLYSALARY SERVICES
+Finsire Website|BAJAJ FINANCE
+Finvolt|SALORA CAPITAL
+Finz fintech|LORD KRISHNA FINANCIAL SERVICES
+FixoFin|2 regulated entities
+Fixrupee|AVINASH CAPITAL MARKETS
+Flash app|2 regulated entities
+FlexiBee|VAISHALI SECURITIES
+Flexicash|PAYU FINANCE INDIA
+Flexiloan|ADITYA BIRLA CAPITAL
+FlexiLoans|3 regulated entities
+FlexiLoans: Business Loans|3 regulated entities
+Flexipayment|2 regulated entities
+Flexmoney|TVS CREDIT SERVICES
+FlexPay|VIVIFI INDIA FINANCE
+FlexSalary|^
+FlipItMoney|FDPL FINANCE
+Flipkart|6 regulated entities
+Flipkart Internet Private Limited|2 regulated entities
+Flipkart Online Shopping App|FINNABLE CREDIT
+Flot|D S G INVESTMENTS
+FLUTTER|HDFC BANK
+Fly Hi|AVANSE FINANCIAL SERVICES
+Freecharge Business App|AXIS BANK
+Freedm|EPIMONEY
+Freo|8 regulated entities
+FriendLoan - 1hr Business Loan|SAMPATHI CREDITS
+FriendLoan Partner|^
+FriendLoan: Business Loan App|^
+FT Cash|PAYU FINANCE INDIA
+FTCash|2 regulated entities
+Fund by Khera|KANTA CREDITS & HOLDINGS
+FUND ON GO|SAMRAAT FINLEASE
+fundbhai|FOCUS INDUSTRIAL RESOURCES
+Fundlelo|SALORA CAPITAL
+FUNDLY|3 regulated entities
+FUNDOBABA|U.Y. FINCORP
+Fundongo|NEENA IMPEX
+Fundsb4salary|AMPIRE FINANCE
+Fundsbull|^
+FundsMama|GIRDHAR FINLEASE
+fundsmama.in|^
+Fynto|SALORA CAPITAL
+GeM Sahay|3 regulated entities
+Get it Now|AMARAVATHI FINANCIAL SOLUTIONS
+GetCred|ARYAMAN FINANCE (INDIA)
+GetitNow|LAKME INVESTMENT & FINANCE
+Getpaisa|PROPKAR SECURITIES
+GetPaise|D.PAL LEASING & FINANCE
+GetVantage|2 regulated entities
+GLAAS|5 regulated entities
+GoCredit|6 regulated entities
+Godrej Personal Loan - Priority Money|GODREJ FINANCE
+Gold Loan|2 regulated entities
+GoldBridge Loan-Line of Credit|NAPEAN FINVEST
+GoodScore|4 regulated entities
+GoodScore: Credit Score App (Rupicard)|INCRED FINANCIAL SERVICES
+Google Pay|5 regulated entities
+Google Pay for Business|DMI FINANCE
+Google Pay India/ GPay Website|BAJAJ FINANCE
+Google Pay: Save, Pay, Manage|2 regulated entities
+Google Pay: Secure UPI payment|2 regulated entities
+Grameen MAHI|CREDITACCESS GRAMEEN
+Grayquest|2 regulated entities
+Grayquest Education Finance Pvt Ltd|MIRAE ASSET FINANCIAL SERVICES (INDIA)
+Grayquest Web Portal|CSB BANK
+Gromo|3 regulated entities
+Group Employee Personal Loans|NISSAN RENAULT FINANCIAL SERVICES INDIA
+Growfi|R.K. BANSAL FINANCE
+GrowFi loan aggregator app|4 regulated entities
+Groww|3 regulated entities
+Groww credit|6 regulated entities
+Groww: Stocks & Mutual Fund|IDFC FIRST BANK
+Grox technologies pvt ltd (Formerly MyShubhlife)|MAS FINANCIAL SERVICES
+GS FINANCE : PERSONAL LOAN|G.S. LEASING & FINANCE
+GST Sahay|PUNJAB NATIONAL BANK
+GST Smart Finance|UCO BANK
+Gyandhan|AVANSE FINANCIAL SERVICES
+Gyandhan Financial Service Private Limited|GYANDHAN FINANCIAL SERVICES
+HDFC Bank Mobile Banking App|HDFC BANK
+Helium|FINTREE FINANCE
+Hello Ujjivan|UJJIVAN SMALL FINANCE BANK
+Hero Digital Lending & UPI App|HERO FINCORP
+Hero FinCorp Customer App|^
+Hero FinCorp Digital UBL|^
+Hero FinCorp Personal Loan App|^
+HL Online|TATA CAPITAL HOUSING FINANCE
+Home Credit Personal Loan App|2 regulated entities
+https://karmalife.ai/|FYNX CAPITAL
+https://moneyase.in/|^
+Huey Tech Private Limited|FINKURVE FINANCIAL SERVICES
+Husk Power Systems Private Limited|ECOFY FINANCE
+i2i Funding|LORD KRISHNA FINANCIAL SERVICES
+IBL Finance Limited|IBL FINANCE
+IBL Money:Instant Loan App|^
+IBL:Instant Personal Loan|^
+IDFC FIRST BANK|IDFC FIRST BANK
+IFHL|KOMAC INVESTMENTS & FINANCE
+IFL Gold Loan|IFL FINANCE
+IIFL Loans App|IIFL FINANCE
+iMobile (Android)|ICICI BANK
+iMobile (IOS)|^
+iMSHAKTI (P2PL)|IMFAST FINFOTECH
+InCred Finance|INCRED FINANCIAL SERVICES
+INDcredit Loan on Mutual Funds|INDCREDIT FINCAP
+India Post Payments Bank|EARLYSALARY SERVICES
+Indialends|7 regulated entities
+Indifi|ADITYA BIRLA CAPITAL
+Indifi Technologies Private Limited|INDIFI CAPITAL
+Indifi Technologies Pvt Ltd|2 regulated entities
+Indifi Unsecured Business loan|2 regulated entities
+INDmoney|5 regulated entities
+Indmoney [Other - Disbursal Drawdown]|TATA CAPITAL
+INDmoney: Stocks, Mutual funds|3 regulated entities
+IndusInd Bank Mobile App- Indie|INDUSIND BANK
+Infinz|INCRED FINANCIAL SERVICES
+Innotech Creditsea Platforms Private Limited|TAPSTART CAPITAL
+Inprime|2 regulated entities
+Insta BIL|ICICI BANK
+Insta Loan against Securities(Mutual Fund)|PUNJAB NATIONAL BANK
+INSTA PAISE|JUNOON CAPITAL SERVICES
+Insta PL|ADITYA BIRLA CAPITAL
+InstaBIZ ( Android)|ICICI BANK
+InstaBIZ (IOS)|^
+Instaclaus|2 regulated entities
+Instacred|RESPO FINANCIAL CAPITAL
+InstaCred by Flexmoney|2 regulated entities
+InstaMoney|2 regulated entities
+Instant Approval Personal Loan|SMFG INDIA CREDIT COMPANY
+Instant Fundz|FINE MOTORS FINVEST
+Instant mudra|2 regulated entities
+Instant Paise|ACOLYTE FINSERV
+InstaOD|ICICI BANK
+Instape|MUFIN GREEN FINANCE
+Instarupees|NEENA IMPEX
+InstaVyapaar|INNOFIN SOLUTIONS (P2P)
+Intellend|MAS FINANCIAL SERVICES
+Internet Banking (Retail and NRI)|ICICI BANK
+IOS - Kotak Bank (New)|KOTAK MAHINDRA BANK
+IOS - Kotak Bank (Old)|^
+IOS - Kotak Bank: 811 Mobile App|^
+Ippopay|KALEIDOFIN CAPITAL
+Ippopay for Stores|BILLIONLOANS FINANCIAL SERVICES
+Ippostore|LIGHT MICRO FINANCE
+IRIS|YES BANK
+Jahtpat Cash|LOAN2GROW FINCAP
+Jai Kisan Farmer|SCIL CAPITAL INDIA
+JanSamarth|INDIAN BANK
+Jansamarth Portal|BANK OF BARODA
+JAR|KISETSU SAISON FINANCE (INDIA)
+JET FUND|REGENCY FINCORP
+JHATPAT LOANS|ACHIIEVERS FINANCE INDIA
+Jify|WHIZDM FINANCE
+Jio Finance|3 regulated entities
+Jio Finance Platform and Service Limited|JIO CREDIT
+JioFinance: For your life!|JIO FINANCE
+Jodo|3 regulated entities
+Jora Capital|SALORA CAPITAL
+jUMPP|FINVASIA FINANCIAL SERVICES
+Jupiter|2 regulated entities
+Juspay|EARLYSALARY SERVICES
+Juspay-Hypercredit|RESPO FINANCIAL CAPITAL
+Kamakshi Money|AVA FINANCE
+KapitaLoan|BLUE CHIP FINANCE
+KarmaLife|4 regulated entities
+Karmalife | EWA|AVANTI FINANCE
+KARROFIN|ORRISH FINANCE
+Kashti|EARLYSALARY SERVICES
+KCC Fresh Sanction|UNION BANK OF INDIA
+KCC Jan Samart|BANK OF MAHARASHTRA
+KCC Renewal Upto 2 lakh|UCO BANK
+KCC Tatkal|BANK OF MAHARASHTRA
+KCC with RBIH integration|UCO BANK
+KeshvaCredit|FDPL FINANCE
+Khatabook|7 regulated entities
+Khatabook credit account book|SMFG INDIA CREDIT COMPANY
+Khatabook Vyapar App|^
+Kisan nXt App|NABKISAN FINANCE
+Kisan Tatkal|UNION BANK OF INDIA
+Kissht|7 regulated entities
+Kissht IOS|6 regulated entities
+Kiwi|2 regulated entities
+KKSV BUSINESS SERVICES PVT LTD|FINKURVE FINANCIAL SERVICES
+Klinq|SHIVDURGA TRADING
+KMPL DIY Loans for pre-approved customers|KOTAK MAHINDRA PRIME
+Kodo|EIGHT FINANCE
+Kosam|SALORA CAPITAL
+KOSH|5 regulated entities
+Kosh24|GODREJ FINANCE
+Kotak Net Banking|KOTAK MAHINDRA BANK
+Kotak PL Pre-Login Webpage|^
+Kotak PLCC Pre-login Page|^
+Kpaisa|EARLYSALARY SERVICES
+Krazybee|NORTHERN ARC CAPITAL
+KREDBHARAT|A.G.F. FINLEASE (INDIA)
+Kredit Mart Personal Loan App|ABHAYKUMAR LEA-FIN & INVESTMENTS
+Kredit Rupee|INNOFIN SOLUTIONS (P2P)
+Kreditbee|15 regulated entities
+KreditBee - Instant Personal Loan Online|NORTHERN ARC CAPITAL
+Kreditbuddha|AVINASH CAPITAL MARKETS
+Kreditcall|USHA FINANCIAL SERVICES
+KreditMart|ABHAYKUMAR LEA-FIN & INVESTMENTS
+KREDITO24|3 regulated entities
+Kreditsure|DIGNER FINLEASE & INVESTMENT
+Kreditzy|2 regulated entities
+Kredmint|MUTHOOT FINCORP
+Kredmint Technologies Private Limited|ZEAL HOLDINGS
+Kredtap|SALORA CAPITAL
+Krishi Tatkal|PUNJAB NATIONAL BANK
+Krux Finance|FDPL FINANCE
+Kruxfinance|LENDINGKART FINANCE
+KuberCash: Personal Loan App|NAPEAN FINVEST
+Kubiz: Loan App, Instant Cash|KUBIZ CAPITAL
+KVB - Dlite & Mobile Banking|KARUR VYSYA BANK
+L&T Finance - Personal Loans|L&T FINANCE
+L&T Finance PLANET (Servicing app and redirection to Personal Loan web journey)|^
+L2G One|LOAN2GROW FINCAP
+LARK Finserv|2 regulated entities
+LARK Finserv Website|BAJAJ FINANCE
+LazyPay|PAYU FINANCE INDIA
+LEAD INSTA|HDFC BANK
+Learnitya|LOAN2GROW FINCAP
+LendingKart|7 regulated entities
+Lendingkart Android Mobile App|2 regulated entities
+Lendingkart Finance Limited|LENDINGKART FINANCE
+Lendingkart: Business Loan|3 regulated entities
+Lendingplate|2 regulated entities
+Lendingrupee|NAMAN COMMODITIES
+Lenditt|2 regulated entities
+Lendplus|NAVIN BROTHERS
+LENTRA|HDFC BANK
+Leo 1|AVANSE FINANCIAL SERVICES
+Leo1|JM FINANCIAL PRODUCTS
+LightMoneyIN|LIGHT MICRO FINANCE
+Lionlender-Loan App|LIONLENDER FINANCE
+Liquify App|BAJAJ FINANCE
+Liquify India App|^
+Loan against FDR|UCO BANK
+Loan against Mutual Funds|CITY UNION BANK
+LOAN ASSIST|HDFC BANK
+Loan Doc|SALORA CAPITAL
+Loan In Hand|^
+Loan in Seconds|JINDAL FINCAP
+Loan Mitraa|ACOLYTE FINSERV
+Loan Nivo|SABRIMALA FINTECH
+Loan Peepal|S.B.N. LEASING AND FINANCE
+Loan Prime|SALORA CAPITAL
+LOAN TAP|HINDON MERCANTILE
+LOAN WITHIN|AGARWAL ASSIGNMENTS
+Loan Zap|FOCUS INDUSTRIAL RESOURCES
+Loan10minute|UNICAP INVESTMENTS
+Loan112 Instant Personal Loan|DEVMUNI LEASING & FINANCE
+LoanArambh|S.B.N. LEASING AND FINANCE
+Loanbiz|D.PAL LEASING & FINANCE
+LoanBloomGo|S.B.N. LEASING AND FINANCE
+LOANDIDI|COLLOCATE MERCHANTS
+Loandigit|FINTREE FINANCE
+Loanfinserve|ACOLYTE FINSERV
+Loanflix|NEENA IMPEX
+LoanFront|3 regulated entities
+LOANHUB|TYCOON CREDIT & PORTFOLIO
+Loaninpocket|NEENA IMPEX
+LoanJai|S.B.N. LEASING AND FINANCE
+Loanmax|APOLLO FINVEST (INDIA)
+LoanNCredit|SALORA CAPITAL
+Loanontip|ACG LEASING
+Loanprime|NEENA IMPEX
+Loans24|EARLYSALARY SERVICES
+LoanSparrow|FDPL FINANCE
+Loantap|3 regulated entities
+Loantap - Personal Loan App|2 regulated entities
+Loantap - Personal Loan App & Ltcash|MAS FINANCIAL SERVICES
+LoanVanta|S.B.N. LEASING AND FINANCE
+LoanVantaBoost|^
+LoanVestra|GANESH LEASFIN
+LOANZO|NARAINSONS INVESTMENTS FINANCE & CONSULTANCY
+Lok Suvidha Finance Limited|ECOFY FINANCE
+LokSuvidha|LOK SUVIDHA FINANCE
+LoveFund|VAISHALI SECURITIES
+Mahabank Rooftop Solar Panel Loan|BANK OF MAHARASHTRA
+Maharani Financial Services|YASHIK FINLEASE
+MAHAUTKARSH SECURITIES & FINANCE PVT. LTD|MAHAUTKARSH SECURITIES & FINANCE
+Mahila Money|INDIUMPLUS FINANCIAL SERVICES
+Mahindra Finance|MAHINDRA & MAHINDRA FINANCIAL SERVICES
+Mahindra Finance: Loans & FD|^
+Manipal Fincap - Loan App|MANIPAL FINCAP
+MartOnline|FINTREE FINANCE
+Maruti Suzuki Smart Finance|INDIAN BANK
+Match My Money|INCRED FINANCIAL SERVICES
+MCFL Loans|MANGAL CREDIT AND FINCORP
+Medscred|RESPO FINANCIAL CAPITAL
+MEESHO|3 regulated entities
+Meesho Payments Private Limited (MPPL)|ZEAL HOLDINGS
+Meesho: Online Shopping App|2 regulated entities
+Micromoney|REGAL ENTERTAINMENT AND CONSULTANTS
+MidFin Customer Service App|MIDLAND MICROFIN
+Mint Money|5 regulated entities
+Mint:Market & News|SMFG INDIA CREDIT COMPANY
+Minutes Loan|PAWANSUT HOLDINGS
+Minutesbazaar|LENDINGKART FINANCE
+Mirae Asset Fin: Loans|MIRAE ASSET FINANCIAL SERVICES (INDIA)
+mobiCred|ORICRED FINSERV
+Mobikwik|13 regulated entities
+MobiKwik : Loans, UPI & Wallet|HERO FINCORP
+MobiKwik for Business|2 regulated entities
+Mobikwik: BHIM UPI & Wallet|2 regulated entities
+Mobile Banking|EXCELLENT CO-OP BANK MUMBAI
+MOBIPRO|THE KODINAR NAGRIK SAHAKARI BANK
+Monedo Financial Services Private Limited|MONEDO FINANCIAL SERVICES
+Money Control|RESPO FINANCIAL CAPITAL
+Money Monk App|MONK CAPITAL
+Money Multiplier (Empowered by Seven Fincorp)|ENN ENN CAPITAL
+Money Tap|KISETSU SAISON FINANCE (INDIA)
+MONEY VIEW : LOANS PERSONAL LOAN APP, INSTANT LOAN|2 regulated entities
+MoneyAse|2 regulated entities
+MONEYBRO|JMJ FINTECH
+Moneycontrol|5 regulated entities
+Moneycontrol - Markets & News|L&T FINANCE
+Moneycontrol-Share Market News|^
+Moneycontrol-ShareMarketNews|INCRED FINANCIAL SERVICES
+Moneycontrolpay|L&T FINANCE
+MoneyDot|FINAGLE FINANCIAL SERVICES
+MoneyTap|3 regulated entities
+MoneyTap and Freo|INCRED FINANCIAL SERVICES
+Moneyview|16 regulated entities
+Moneyview Limited (Formerly Known as Whizdm Innovations Private Limited)|PIRAMAL FINANCE
+Moneyview: Loans, Credit Cards|NORTHERN ARC CAPITAL
+Moneyview: UPI, Personal Loans|^
+Moneyview: UPI, Personal Loans, Credit|^
+Moneywalle|ACOLYTE FINSERV
+MOTION CORP|FINTREE FINANCE
+MotorHunk|CARS24 FINANCIAL SERVICES
+mPokket: Instant Loan App|MPOKKET FINANCIAL SERVICES
+mPokket: Instant Personal Loan|^
+mshiFFt|SHIVALIK SMALL FINANCE BANK
+Mudra(Kishore & Tarun)|UNION BANK OF INDIA
+MudraFast Cash-Personal Loan|LUCKY HOLDINGS
+MudraSewa|URGENT FINVEST
+MUTHOOT FINCORP ONE|3 regulated entities
+MY FLOT|TYCOON CREDIT & PORTFOLIO
+MY LOAN|ATD FINANCIAL SERVICES
+My Money Bazaar|BANSAL IN HOLD
+My Salary Loan|EPOCH MERCANTILES
+Mybank – Android version|RBL BANK
+Mybank – I-phone App store|^
+MYINSTACASH|ORRISH FINANCE
+Myinstafunds|B.P. SECURITIES (INDIA)
+myklinq|AUREUS FINVEST
+MyMoney Mantra|INCRED FINANCIAL SERVICES
+MyMoneyBazaar|AASRA FINCORP
+MyMoneyMantra|L&T FINANCE
+MyMoneyMantra: Loans & Cards|^
+MyShubhLife|2 regulated entities
+N.A.|J. P. MORGAN SECURITIES INDIA
+NA|3 regulated entities
+NANOKRED|P.A. SECURITIES
+Nari Shakti|UNION BANK OF INDIA
+Naukri Loans|LAXMI INFIN
+Navi|KISETSU SAISON FINANCE (INDIA)
+NAVI Finserv|TVS CREDIT SERVICES
+Navi Finserv Limited|6 regulated entities
+NAVI TREZO|KARNATAKA BANK
+NaviraLoan|S.B.N. LEASING AND FINANCE
+Neo for Merchants|AXIS BANK
+Neoble Website|BAJAJ FINANCE
+NeoCash Insta|NEOGROWTH CREDIT
+NeoGrowth App|^
+NeoMoney|DHRUVA CAPITAL SERVICES
+Nest|MEGHDOOT MERCANTILE
+NET BANKING|HDFC BANK
+Netambit|FDPL FINANCE
+Nexiloans|YASHIK FINLEASE
+NexLoan-Credit Loop|NAPEAN FINVEST
+Next Capital|BILLUS INVESTMENTS
+Nextfin: Instant Loan|AMAR AMBA FINANCE HIRE PURCHASE
+Nill|SUNDARLAL SAWJI URBAN CO-OPERATIVE BANK JINTUR
+Ninja|2 regulated entities
+Ninja Global Import Export|2 regulated entities
+NinjaCart|IDFC FIRST BANK
+Ninjamandi|2 regulated entities
+NIRA|3 regulated entities
+NIRA FINANCE|NIYOGIN FINTECH
+NIRA Instant Personal Loan App|4 regulated entities
+Niro|KISETSU SAISON FINANCE (INDIA)
+Nivi Loans|FDPL FINANCE
+NJ Capital Private Limited|NJ CAPITAL
+NJ Financial Services Private Limited|NJ CAPITAL
+Njloans Website|BAJAJ FINANCE
+Nobroker|2 regulated entities
+Nobroker Instacash|EARLYSALARY SERVICES
+NONE|TITEC FINANCE
+NORTHERN ARC CAPITAL LIMITED|NORTHERN ARC CAPITAL
+Novopay|HDFC BANK
+NTB-Personal Loan|PUNJAB NATIONAL BANK
+NYE|6 regulated entities
+OD on Asset|ICICI BANK
+OkCredit|4 regulated entities
+OLA|2 regulated entities
+Ola Money|5 regulated entities
+Olyv|2 regulated entities
+Olyv (SmartCoin)|3 regulated entities
+Olyv (SmartCoin) Personal Loan|NORTHERN ARC CAPITAL
+Olyv: Loans & Credit Score|^
+Omozing Personal Loans|APARAMPAAR FINANCE
+One Andro|EARLYSALARY SERVICES
+One Andro app (DLA of LSP)|HDFC BANK
+One Card|INDIAN BANK
+One Score|KISETSU SAISON FINANCE (INDIA)
+Onescore|3 regulated entities
+Online Asset Portal (OAP)|ICICI BANK
+Online Gold Loan : Rupeek|RUPEEK CAPITAL
+Ono Ark India Pvt. Ltd.|LIGHT MICRO FINANCE
+Onsecore|PIRAMAL FINANCE
+Oolka|INCRED FINANCIAL SERVICES
+Oro Money|3 regulated entities
+Oroboro Loans|TRANSWARRANTY FINANCE
+ORRISH LOANS|ORRISH FINANCE
+OTO|2 regulated entities
+OTO Capital|2 regulated entities
+OTO: Buy Bikes at lowest price|NORTHERN ARC CAPITAL
+Overdraft against FD/RD|UCO BANK
+P4B|TATA CAPITAL
+PaapaPay|SIDDHI TRADERS
+Pahal Pe|PAHAL FINANCIAL SERVICES
+Paisa Bazaar|2 regulated entities
+Paisa On Salary|FOCUS INDUSTRIAL RESOURCES
+Paisa on Time|SALORA CAPITAL
+Paisa Pop|IDF FINANCIAL SERVICES
+PAISA UDHAR|JUNOON CAPITAL SERVICES
+Paisa108|2 regulated entities
+Paisa24 Finance|BAROTA FINANCE
+Paisa247|2 regulated entities
+Paisaanytime|AGRIM FINCAP
+Paisabazaar|14 regulated entities
+Paisabazaar App (DLA of LSP)|HDFC BANK
+PaisaBazaar Application|FEDERAL BANK
+Paisabazaar Marketing and Consulting Private Limited|2 regulated entities
+Paisabazaar Marketing and Consulting Pvt Ltd|SMFG INDIA CREDIT COMPANY
+Paisabazaar-Loans,Credit Score|EPIMONEY
+paisabazaar.com|2 regulated entities
+Paisabazar|2 regulated entities
+Paisaboxx|SAWALSHA LEASING & FINANCE
+PaisaCash-Personal Credit|NAPEAN FINVEST
+PaisaDaily|READY LEASING
+PaisaNext|SEVEN ELEVEN LEASING & FINANCE
+Paisanow|CAPITAL TRADE LINKS
+PaisaOne|INCRED FINANCIAL SERVICES
+Paizo|NICE FINANCE AND LEASING
+Park+|KISETSU SAISON FINANCE (INDIA)
+Parkplus|2 regulated entities
+Parkplus ( via Upswing)|DMI FINANCE
+Pay Me India*|UNITY SMALL FINANCE BANK
+Pay with Ring|MIRAE ASSET FINANCIAL SERVICES (INDIA)
+PayInstaCard Private Limited|INCRED FINANCIAL SERVICES
+Payme|4 regulated entities
+PayMe: Personal Loan App|AVANTI FINANCE
+PayNearby - Aadhaar ATM, DMT|2 regulated entities
+Payrup|INCRED FINANCIAL SERVICES
+PayRupik|SAYYAM INVESTMENTS
+Paysense|2 regulated entities
+Paytm|24 regulated entities
+Paytm for Business|4 regulated entities
+Paytm Merchant app|SI CREVA CAPITAL SERVICES
+Paytm-MSME|SURYODAY SMALL FINANCE BANK
+Paytm: Secure UPI Payments|2 regulated entities
+PaywithRING (by Kissht)|2 regulated entities
+PayZapp|HDFC BANK
+Pb-CreditScore, CreditCard, Loans|LENDINGKART FINANCE
+Peday Money|SALORA CAPITAL
+PennyDrop|SHANKAR FININVEST
+Perfect Paisa|ACOLYTE FINSERV
+Personal Loan|2 regulated entities
+Petro1 - Powered by Tyger Capital|TYGER CAPITAL
+Petticash|BT FINANCE
+PFIL FINANCE|POOJA FINSTOCK INTERNATIONAL
+PHOCKET|CITRA FINANCIALS
+Phone pe|2 regulated entities
+PhonePe|4 regulated entities
+PhonePe - Lending Website|SHRIRAM FINANCE`;
+  function norm(s){ return String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]/g,'').replace(/(privatelimited|pvtltd|limited|ltd)$/,''); }
+  var DLA = [];
+  (function(){
+    var prev = '';
+    DLA_RAW.split('\n').forEach(function(line){
+      line = line.trim(); if(!line) return;
+      var i = line.lastIndexOf('|'); if(i < 0) return;
+      var name = line.slice(0,i).trim(), ent = line.slice(i+1).trim();
+      if(ent === '^') ent = prev; else prev = ent;
+      DLA.push({n:name, e:ent, k:norm(name), b:norm(name.split(/:| - /)[0]), ek:norm(ent)});
+    });
+  })();
+  function lookupDLA(raw){
+    var q = norm(raw);
+    if(q.length < 3) return {status:'empty'};
+    var exact = DLA.filter(function(d){ return d.k === q || d.b === q; });
+    if(exact.length) return {status:'found', hits:exact};
+    var sim = DLA.filter(function(d){ return (q.length >= 4 && d.k.indexOf(q) !== -1) || (d.k.length >= 6 && q.indexOf(d.k) !== -1); });
+    sim.sort(function(a,b){ var x = a.k.indexOf(q) === 0 ? 0 : 1, y = b.k.indexOf(q) === 0 ? 0 : 1; return (x - y) || (a.k.length - b.k.length); });
+    if(sim.length) return {status:'similar', hits:sim.slice(0,6)};
+    if(q.length >= 5){
+      var lend = DLA.filter(function(d){ return d.ek.indexOf(q) !== -1; });
+      if(lend.length) return {status:'lender', hits:lend.slice(0,6)};
+    }
+    return {status: q < 'phonepf' ? 'notfound' : 'unknown'};
+  }
+  function syncRbi(r){
+    if(r.status === 'found') $('#rbi').value = 'yes';
+    else if(r.status === 'notfound') $('#rbi').value = 'no';
+  }
+  function renderDla(el, r, raw){
+    var meta = {found:['ok','Found in RBI directory'], similar:['warn','Similar names found'], lender:['warn','Lender name found'], notfound:['bad','Not found in RBI directory'], unknown:['gray','Cannot confirm yet'], empty:['gray','Type an app name']};
+    var m = meta[r.status], body = '';
+    var list = function(hits){ return '<ul class="alt">' + hits.map(function(h){ return '<li><strong>' + esc(h.n) + '</strong><div class="muted">Lender: ' + esc(h.e) + '</div></li>'; }).join('') + '</ul>'; };
+    if(r.status === 'found'){
+      var h = r.hits[0], more = r.hits.length - 1;
+      body = '<p style="margin:10px 0 4px"><strong>' + esc(h.n) + '</strong> is listed. Lender behind it: <strong>' + esc(h.e) + '</strong>' + (more > 0 ? ' (plus ' + more + ' more listing' + (more > 1 ? 's' : '') + ' with this name)' : '') + '.</p>'
+        + '<p class="muted" style="margin:0">Found does not prove your app is the real one. Copycat apps reuse real names. Check that the lender and developer on the app\'s store page match this listing.</p>';
+    } else if(r.status === 'similar'){
+      body = '<p style="margin:10px 0 2px">No listing has exactly this name. Closest listings:</p>' + list(r.hits) + '<p class="muted" style="margin:0">If your app is not exactly one of these, treat it as not listed.</p>';
+    } else if(r.status === 'lender'){
+      body = '<p style="margin:10px 0 2px">This matches a lender name in the directory. Apps listed under it:</p>' + list(r.hits) + '<p class="muted" style="margin:0">Check that the app you have is one of these.</p>';
+    } else if(r.status === 'notfound'){
+      body = '<p style="margin:10px 0 4px">No app called <strong>' + esc(raw) + '</strong> is in the snapshot of RBI\'s directory.</p>'
+        + '<p class="muted" style="margin:0">It may be new or listed under another name, so also search the lender\'s name on RBI\'s site. If you cannot find the lender there, do not borrow.</p>';
+    } else if(r.status === 'unknown'){
+      body = '<p style="margin:10px 0 4px">This snapshot only covers names up to "PhonePe" in A to Z order, so <strong>' + esc(raw) + '</strong> cannot be checked here yet.</p>'
+        + '<p class="muted" style="margin:0">Search it on rbi.org.in under Citizen\'s Corner, then DLAs Deployed by Regulated Entities.</p>';
+    } else {
+      body = '<p style="margin:10px 0 0" class="muted">Enter at least 3 letters of the app name.</p>';
+    }
+    el.innerHTML = '<div class="dla" role="status"><span class="pill ' + m[0] + '">' + m[1] + '</span>' + body
+      + '<p class="fine" style="margin:10px 0 0">Snapshot of RBI\'s Digital Lending Apps directory from ' + DLA_DATE + ', copied from a public mirror, not from RBI directly. It covers names up to "PhonePe". The live list changes, so confirm on rbi.org.in.</p></div>';
+    el.hidden = false;
+  }
+  $('#btnDla').addEventListener('click', function(){
+    var nm = $('#appName').value.trim();
+    var r = nm ? lookupDLA(nm) : {status:'empty'};
+    renderDla($('#dlaOut'), r, nm);
+    syncRbi(r);
+  });
+
+  /* ---------- app check ---------- */
+  var APP_ADVICE = {
+    bad: ["Do not install it. If you already did, uninstall it and remove its permissions in your phone settings.","Never give a loan app access to your contacts, photos or SMS.","Look at safer options in the Loan cost tab.","If anyone has already threatened you, open the Get help tab."],
+    warn: ["Check the lender in RBI's directory of digital lending apps before you borrow.","Ask for the key facts statement. It must show the full cost before you accept.","Deny any permission that is not needed to give you a loan."],
+    ok: ["Still read the total repayment amount before you accept.","Do not allow contacts, photos or SMS access.","Keep screenshots of the offer and your payments."]
+  };
+  function num(id){ var v = parseFloat($(id).value); return isFinite(v) ? v : NaN; }
+  function checked(id){ return $(id).checked; }
+
+  function analyseApp(dla){
+    var score = 0, sig = [];
+    function add(pts, sev, t, d){ score += pts; sig.push({sev:sev, t:t, d:d, pts:pts}); }
+    var src = $('#src').value;
+    if(src === 'apk') add(25,'bad','Installed from a link, not the Play Store','Fake loan apps mostly spread as APK files through SMS, WhatsApp and social media ads.');
+    else if(src === 'unsure') add(10,'warn','You are not sure where it came from','Only install lending apps from a source you can trace.');
+    else add(0,'ok','Listed on the Play Store','A good sign, but not proof. Illegal apps have slipped through before.');
+
+    var rbi = $('#rbi').value;
+    if(dla && dla.status === 'found') add(0,'ok','Found in RBI\'s directory (snapshot)','Listed with lender ' + dla.hits[0].e + '. Now check that the lender and developer on the app\'s store page match, because copycat apps reuse real names.');
+    else if(dla && dla.status === 'notfound') add(40,'bad','Not found in RBI\'s directory (snapshot)','No app with this name is listed. It may be new or listed under another name, so also check the lender\'s name on RBI\'s site.');
+    else if(rbi === 'no') add(40,'bad','Not in RBI\'s directory of digital lending apps','Regulated lenders and their apps are listed there. Not being listed is the biggest red flag.');
+    else if(rbi === 'unchecked') add(20,'warn','Not yet checked against RBI\'s directory','This is the single most useful check. Do it before you borrow.');
+    else add(0,'ok','Listed in RBI\'s directory','Good. Still match the lender name on the app with the name in the directory.');
+
+    if(checked('#perm-contacts')) add(15,'bad','Asks for your contacts','A lender does not need your contact list. Illegal apps use it to message your family and friends.');
+    if(checked('#perm-photos')) add(10,'bad','Asks for your photos and files','Photos have been misused to create morphed pictures for blackmail.');
+    if(checked('#perm-sms')) add(10,'warn','Asks to read your SMS','It could see OTPs and bank messages.');
+    if(checked('#perm-calls')) add(5,'warn','Asks for your call logs','Not needed to give you a loan.');
+
+    var fee = $('#fee').value;
+    if(fee === 'high') add(20,'bad','Over 15% is taken before you get the money','Scam apps often show a bigger loan than what reaches you.');
+    else if(fee === 'mid') add(10,'warn','5% to 15% is taken upfront','Check this is shown in writing before you accept.');
+
+    if(checked('#c-nokfs')) add(15,'bad','Full repayment amount is not shown upfront','Regulated lenders must show the total cost clearly before you accept.');
+    if(checked('#c-harass')) add(15,'bad','Reviews mention threats or messages to contacts','Warnings from past borrowers are among the strongest signals.');
+    if(checked('#c-fake')) add(5,'warn','Reviews look fake','Copied 5-star reviews can hide the real complaints.');
+    if(checked('#c-grv')) add(10,'warn','No grievance officer, address or support','A genuine lender has a named officer and a real address.');
+    if(checked('#c-mail')) add(10,'warn','Weak developer details','A free email address or missing privacy policy is a warning sign.');
+    if(checked('#c-new')) add(5,'warn','Very new app or removed apps','Scam operators often reappear under a new name.');
+
+    var recv = num('#a-recv'), repay = num('#a-repay'), days = num('#a-days');
+    if(recv > 0 && repay > 0 && days >= 1 && repay >= recv){
+      var c = loanCost(recv, repay, days);
+      var txt = 'You receive ' + inr(recv) + ' and repay ' + inr(repay) + ' in ' + days + ' days. That is about ' + fmtPct(c.apr) + ' a year.';
+      if(c.apr > 365) add(25,'bad','Extreme real cost', txt);
+      else if(c.apr > 100) add(15,'bad','Very high real cost', txt);
+      else if(c.apr > 36) add(5,'warn','High real cost', txt);
+      else add(0,'ok','Cost is in a usual range for small loans', txt);
+    }
+    score = Math.min(100, score);
+    sig.sort(function(a,b){ return b.pts - a.pts; });
+    return {score: score, signals: sig, title: $('#appName').value.trim() || 'This loan app'};
+  }
+  $('#btnApp').addEventListener('click', function(){
+    var isSample = sampleMode; sampleMode = false;
+    var nm = $('#appName').value.trim(), dla = null;
+    if(nm){ dla = lookupDLA(nm); syncRbi(dla); renderDla($('#dlaOut'), dla, nm); }
+    var r = analyseApp(dla);
+    var rdApp = nm ? {kind:'app', key: safeKey(norm(nm)), label: nm + (isSample ? ' (sample)' : ''), shareable: true, allowReject: true, rejectLabel: 'Report this app'} : null;
+    renderRisk($('#appOut'), {radar: rdApp, score:r.score, title:r.title, signals:r.signals, advice:APP_ADVICE,
+      fine:'Borrowise is a rule-based risk guide, not a final verdict. It scores only what you tell it, so check each answer on the app\'s store page.'});
+  });
+  $('#exApp').addEventListener('click', function(){
+    sampleMode = true;
+    $('#appName').value = 'FastCash Rupee Pro';
+    $('#src').value = 'apk'; $('#rbi').value = 'no'; $('#fee').value = 'high';
+    ['#perm-contacts','#perm-photos','#c-nokfs','#c-harass','#c-grv'].forEach(function(id){ $(id).checked = true; });
+    $('#a-recv').value = 3500; $('#a-repay').value = 5000; $('#a-days').value = 7;
+    $('#btnApp').click();
+  });
+
+  /* ---------- cost tab ---------- */
+  $('#btnCost').addEventListener('click', function(){
+    var out = $('#costOut');
+    var offer = num('#k-offer'), recv = num('#k-recv'), repay = num('#k-repay'), days = num('#k-days');
+    if(!(recv > 0) || !(repay > 0) || !(days >= 1)){ showError(out, 'Enter the amount you receive, the total you repay, and the number of days.'); return; }
+    if(repay < recv){ showError(out, 'The amount you repay is smaller than the amount you receive. Check the numbers.'); return; }
+    var c = loanCost(recv, repay, days);
+    var bench = recv * 0.24 * days / 365;
+    var max = Math.max(c.extra, bench, 1);
+    var level = c.apr > 365 ? {k:'bad', t:'Extremely high'} : c.apr > 100 ? {k:'bad', t:'Very high'} : c.apr > 36 ? {k:'warn', t:'High'} : {k:'ok', t:'In the usual range for small loans'};
+    var upfront = (offer > recv) ? '<p style="margin:12px 0 0">You were offered <strong>'+inr(offer)+'</strong>, but only <strong>'+inr(recv)+'</strong> reaches you. <strong>'+inr(offer-recv)+'</strong> ('+fmtPct((offer-recv)/offer*100)+') is taken upfront.</p>' : '';
+    out.innerHTML =
+      '<div class="card">'
+      + '<p class="big-sentence">You pay '+inr(c.extra)+' extra to use '+inr(recv)+' for '+days+(days===1?' day':' days')+'.</p>'
+      + '<p style="margin:0 0 10px">That works out to about <strong>'+fmtPct(c.apr)+' a year</strong>. <span class="pill '+level.k+'" style="font-size:14px;padding:5px 12px;margin-left:4px">'+esc(level.t)+'</span></p>'
+      + '<div class="bars">'
+      + '<div class="bar-row"><div class="bar-label"><span>This loan</span><strong>'+inr(c.extra)+'</strong></div><div class="bar-track"><div class="bar-fill '+(c.apr>36?'bad':'')+'" style="width:'+Math.max(2,c.extra/max*100)+'%"></div></div></div>'
+      + '<div class="bar-row"><div class="bar-label"><span>Same loan at 24% a year</span><strong>'+inr(bench)+'</strong></div><div class="bar-track"><div class="bar-fill" style="width:'+Math.max(2,bench/max*100)+'%"></div></div></div>'
+      + '</div>' + upfront
+      + '<p class="fine" style="margin:12px 0 0">Yearly cost = extra paid ÷ amount received, scaled to 365 days. It is a simple estimate to help you compare, not a lender\'s official rate.</p>'
+      + '</div>';
+    out.hidden = false;
+    out.scrollIntoView({behavior: reduce() ? 'auto' : 'smooth', block:'start'});
+  });
+  $('#exCost').addEventListener('click', function(){
+    $('#k-offer').value = 5000; $('#k-recv').value = 3500; $('#k-repay').value = 5000; $('#k-days').value = 7;
+    $('#btnCost').click();
+  });
+
+  /* ---------- help: checklist ---------- */
+  var STEPS = [
+    {id:'ev', t:'Save evidence first', d:'Screenshot messages, call logs with numbers and times, the app name, and your loan and payment receipts. Do not delete any chats.'},
+    {id:'pay', t:'Do not pay more because of threats', d:'Paying under pressure often leads to fresh demands. Speak to the police before sending more money.'},
+    {id:'lock', t:'Lock down your phone', d:'After saving evidence, uninstall the app and remove its permissions. Change passwords and UPI PINs if you shared any, and tell your bank if account details were exposed.'},
+    {id:'fam', t:'Warn family and friends', d:'Send the message at the bottom of this page so threats to your contacts lose their power.'},
+    {id:'rep', t:'Report it', d:'Call 1930 or file at cybercrime.gov.in. Take your complaint draft to the local cyber crime cell. You can also report unregulated lenders on the RBI Sachet portal.'}
+  ];
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem('kaavalai-steps') || '{}') || {}; } catch(e){ state = {}; }
+  function saveState(){ try { localStorage.setItem('kaavalai-steps', JSON.stringify(state)); } catch(e){} }
+  function renderProgress(){
+    var n = STEPS.filter(function(s){ return state[s.id]; }).length;
+    $('#prog').style.width = (n / STEPS.length * 100) + '%';
+  }
+  var cl = $('#checklist');
+  cl.innerHTML = STEPS.map(function(s){
+    return '<label class="check"><input type="checkbox" data-id="'+s.id+'"'+(state[s.id]?' checked':'')+'><div><strong>'+esc(s.t)+'</strong><span class="muted">'+esc(s.d)+'</span></div></label>';
+  }).join('');
+  cl.addEventListener('change', function(e){
+    var id = e.target.getAttribute('data-id'); if(!id) return;
+    state[id] = e.target.checked; saveState(); renderProgress();
+  });
+  renderProgress();
+
+  /* ---------- help: complaint ---------- */
+  function copyText(text, btn){
+    var label = btn.textContent;
+    function done(){ btn.textContent = 'Copied'; setTimeout(function(){ btn.textContent = label; }, 1800); }
+    function fallback(){
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch(e){ btn.textContent = 'Select the text and copy it'; }
+      ta.remove();
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, fallback); } else fallback();
+  }
+  $('#btnComplaint').addEventListener('click', function(){
+    var name = $('#cName').value.trim() || '[Your name]';
+    var phone = $('#cPhone').value.trim() || '[Your phone number]';
+    var app = $('#cApp').value.trim() || '[Loan app name]';
+    var amt = num('#cAmt');
+    var amount = amt > 0 ? inr(amt) : '[amount]';
+    var d = $('#cDate').value;
+    var date = d ? new Date(d + 'T00:00:00').toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'}) : '[date]';
+    var what = Array.prototype.map.call(document.querySelectorAll('input[name=cw]:checked'), function(i){ return i.value.replace('threatening','threatening'); });
+    if(!what.length) what = ['[Describe what happened]'];
+    var nums = $('#cNums').value.trim();
+    var extra = $('#cExtra').value.trim();
+    var today = new Date().toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'});
+    var text =
+      'To,\nThe Station House Officer / Cyber Crime Cell\n[Your city or district]\n\n' +
+      'Subject: Complaint against the illegal loan app "' + app + '" for harassment, threats and misuse of personal data\n\n' +
+      'Respected Sir/Madam,\n\n' +
+      'I, ' + name + ' (phone: ' + phone + '), wish to report that I took a loan of ' + amount + ' through the mobile app "' + app + '" on ' + date + '.\n\n' +
+      'Since then, I have faced the following:\n' + what.map(function(w){ return '- ' + w; }).join('\n') + '\n\n' +
+      (nums ? 'Phone numbers and accounts used by them: ' + nums + '\n\n' : '') +
+      (extra ? 'Additional details: ' + extra + '\n\n' : '') +
+      'I have kept screenshots, call logs and payment records as evidence and can submit them. I request you to register my complaint, take action against the operators of the app and the people behind these numbers, and stop the misuse of my contacts and personal data.\n\n' +
+      'I have also reported or will report this on the National Cyber Crime Reporting Portal (cybercrime.gov.in) / helpline 1930. Acknowledgement number: [______]\n\n' +
+      'Yours faithfully,\n' + name + '\nDate: ' + today;
+    $('#draft').value = text;
+    $('#complaintOut').hidden = false;
+    $('#draft').scrollIntoView({behavior: reduce() ? 'auto' : 'smooth', block:'center'});
+  });
+  $('#copyDraft').addEventListener('click', function(){ copyText($('#draft').value, this); });
+  $('#copyFam').addEventListener('click', function(){ copyText($('#famMsg').value, this); });
+  renderMine(); renderRadar(); initRadar();
+})();
+</script>
+</body>
+</html>
